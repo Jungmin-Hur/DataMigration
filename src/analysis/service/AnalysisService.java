@@ -1,40 +1,54 @@
 package analysis.service;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
-import analysis.model.Migration;
 
-public class AnalysisService {
-	/**
-	 * 파일 Read -> Model Converting
-	 * @return List<Migration>
-	 */
-	public List<Migration> convertFileToMigrationModel() {
+import analysis.model.SchemaInfo;
+
+public class AnalysisService implements IAnalysisService {
+	
+	public List<SchemaInfo> loadSchemaInfoFromFile(String filename) {
+		System.out.println("loadSchemaInfoFromFile started!!");
+
+		List<SchemaInfo> schemaInfoList = new ArrayList<>();
+		try {
+			BufferedReader in = new BufferedReader(new FileReader(filename));
+			List<SchemaInfo> list = makeSchemaInfo(""); //TODO file read 로직 추가
+			schemaInfoList.addAll(list);
+			in.close();
+			System.out.println("file read finish");
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		System.out.println(schemaInfoList.size() + "schemaInfoList are loaded.");
+		System.out.println("loadSchemaInfoFromFile finished!!");
+		
+		return schemaInfoList;
+	}
+	
+	private List<SchemaInfo> makeSchemaInfo(String data){
+		//TODO
+		//split data
+		//generate key 2개 : UniqueIdUtil 써서...
+		//mapping schemainfo 2개 model (두 객체간 연계 key값도 세팅하기)
 		return null;
 	}
 	
-	/**
-	 * as-is, to-be 스키마 검증
-	 * 결과는 file write함
-	 * @param migrations
-	 * @return
-	 */
-	public boolean isConvertableBetweenAsisAndTobe(List<Migration> migrations) {
+	public boolean isConvertableBetweenAsisAndTobe(List<SchemaInfo> schemaInfoList) {
 		return true;
 	}
 	
-	/**
-	 * AS-IS 데이터 정의 검증 (클랜징 데이터 존재 여부)
-	 * 실데이터와 확인해야 함
-	 * @return
-	 */
-	public boolean validationAsisDefinition(List<Migration> migrations){
+	public boolean validationAsisDefinition(List<SchemaInfo> schemaInfoList){
 		return true;
 	}
 
-	/**
-	 * file read하여 stdout에 결과 보여주기
-	 * @return
-	 */
 	public boolean anaysisReport(){
 		return true;
 	}

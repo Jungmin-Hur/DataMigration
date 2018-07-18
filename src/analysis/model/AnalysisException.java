@@ -1,5 +1,7 @@
 package analysis.model;
 
 public enum AnalysisException {
-	SOURCE, TARGET
+	NOT_EXIST_REFERENCE_DATA,
+	INVALID_DATA_TYPE,
+	NOT_MATCH_DATA_TYPE
 }
