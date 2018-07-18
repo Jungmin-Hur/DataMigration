@@ -6,29 +6,29 @@ import analysis.model.SchemaInfo;
 public interface IAnalysisService {
 
 	/**
-	 * ÆÄÀÏ Read -> Model Converting
+	 * íŒŒì¼ Read -> Model Converting
 	 * @param filename
 	 * @return List<SchemaInfo>
 	 */
 	public List<SchemaInfo> loadSchemaInfoFromFile(String filename);
 	
 	/**
-	 * as-is, to-be ½ºÅ°¸¶ °ËÁõ
-	 * °á°ú´Â file writeÇÔ
+	 * as-is, to-be ìŠ¤í‚¤ë§ˆ ê²€ì¦
+	 * ê²°ê³¼ëŠ” file writeí•¨
 	 * @param schemaInfoList
 	 * @return
 	 */
 	public boolean isConvertableBetweenAsisAndTobe(List<SchemaInfo> schemaInfoList);
 	
 	/**
-	 * AS-IS µ¥ÀÌÅÍ Á¤ÀÇ °ËÁõ (Å¬·£Â¡ µ¥ÀÌÅÍ Á¸Àç ¿©ºÎ)
-	 * ½Çµ¥ÀÌÅÍ¿Í È®ÀÎÇØ¾ß ÇÔ
+	 * AS-IS ë°ì´í„° ì •ì˜ ê²€ì¦ (í´ëœì§• ë°ì´í„° ì¡´ì¬ ì—¬ë¶€)
+	 * ì‹¤ë°ì´í„°ì™€ í™•ì¸í•´ì•¼ í•¨
 	 * @return
 	 */
 	public boolean validationAsisDefinition(List<SchemaInfo> schemaInfoList);
 
 	/**
-	 * file readÇÏ¿© stdout¿¡ °á°ú º¸¿©ÁÖ±â
+	 * file readí•˜ì—¬ stdoutì— ê²°ê³¼ ë³´ì—¬ì£¼ê¸°
 	 * @return
 	 */
 	public boolean anaysisReport();

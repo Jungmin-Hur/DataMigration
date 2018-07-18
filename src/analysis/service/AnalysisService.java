@@ -17,7 +17,7 @@ public class AnalysisService implements IAnalysisService {
 		List<SchemaInfo> schemaInfoList = new ArrayList<>();
 		try {
 			BufferedReader in = new BufferedReader(new FileReader(filename));
-			List<SchemaInfo> list = makeSchemaInfo(""); //TODO file read ·ÎÁ÷ Ãß°¡
+			List<SchemaInfo> list = makeSchemaInfo(""); //TODO file read ë¡œì§ ì¶”ê°€
 			schemaInfoList.addAll(list);
 			in.close();
 			System.out.println("file read finish");
@@ -26,6 +26,8 @@ public class AnalysisService implements IAnalysisService {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		
+		//TODO ì…ë ¥ë°›ì€ ìŠ¤í‚¤ë§ˆ ì •ë³´ê°€ ì§„ì§œ ì¡´ì¬í•˜ëŠ” ìŠ¤í‚¤ë§ˆ ì •ë³´ì¸ì§€ í™•ì¸í•˜ëŠ” ë¡œì§ ì¶”ê°€ í•„ìš”
 
 		System.out.println(schemaInfoList.size() + "schemaInfoList are loaded.");
 		System.out.println("loadSchemaInfoFromFile finished!!");
@@ -36,8 +38,8 @@ public class AnalysisService implements IAnalysisService {
 	private List<SchemaInfo> makeSchemaInfo(String data){
 		//TODO
 		//split data
-		//generate key 2°³ : UniqueIdUtil ½á¼­...
-		//mapping schemainfo 2°³ model (µÎ °´Ã¼°£ ¿¬°è key°ªµµ ¼¼ÆÃÇÏ±â)
+		//generate key 2ê°œ : UniqueIdUtil ì¨ì„œ...
+		//mapping schemainfo 2ê°œ model (ë‘ ê°ì²´ê°„ ì—°ê³„ keyê°’ë„ ì„¸íŒ…í•˜ê¸°)
 		return null;
 	}
 	
@@ -48,7 +50,7 @@ public class AnalysisService implements IAnalysisService {
 	public boolean validationAsisDefinition(List<SchemaInfo> schemaInfoList){
 		return true;
 	}
-
+	
 	public boolean anaysisReport(){
 		return true;
 	}

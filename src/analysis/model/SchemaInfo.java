@@ -5,9 +5,9 @@ import java.util.Date;
 public class SchemaInfo {
 
 	private String id; // id
-	private RelationType relationType; // source, targetÀÇ °ü°è Á¤º¸
-	private String sourceId; // sourceId, ÀÌ object°¡ source¸é sourceId´Â id¿Í µ¿ÀÏ
-	private String targetId; // targetId, ÀÌ object°¡ targetÀÌ¸é targetId´Â id¿Í µ¿ÀÏ
+	private RelationType relationType; // source, targetì˜ ê´€ê³„ ì •ë³´
+	private String sourceId; // sourceId, ì´ objectê°€ sourceë©´ sourceIdëŠ” idì™€ ë™ì¼
+	private String targetId; // targetId, ì´ objectê°€ targetì´ë©´ targetIdëŠ” idì™€ ë™ì¼
 	private String columnName;
 	private String columnType;
 	private String validationQuery;
