@@ -7,22 +7,22 @@ import analysis.service.AnalysisService;
 
 public class Analysis {
 	
-	private static String SCHEMAINFO_FILE_NAME = "D:\\ECLIPSE\\workspace\\DataMigration\\src\\SchemaInfo.txt"; //TODO argument·Î º¯°æ¿¹Á¤
+	private static String SCHEMAINFO_FILE_NAME = "D:\\ECLIPSE\\workspace\\DataMigration\\src\\SchemaInfo.txt"; //TODO argumentë¡œ ë³€ê²½ì˜ˆì •
 
 	public static void main(String[] args) {
 		
 		AnalysisService analysis = new AnalysisService();
 		
-		//½ºÅ°¸¶Á¤º¸, µ¥ÀÌÅÍ Á¤ÀÇ -> model·Î µ¥ÀÌÅÍ converting
+		//ìŠ¤í‚¤ë§ˆì •ë³´, ë°ì´í„° ì •ì˜ -> modelë¡œ ë°ì´í„° converting
 		List<SchemaInfo> schemaInfoList = analysis.loadSchemaInfoFromFile(SCHEMAINFO_FILE_NAME);
 		
-		//as-is, to-be ½ºÅ°¸¶ °ËÁõ
+		//as-is, to-be ìŠ¤í‚¤ë§ˆ ê²€ì¦
 		boolean isConvertable = analysis.isConvertableBetweenAsisAndTobe(schemaInfoList);
 		
-		//as-is µ¥ÀÌÅÍ Á¤ÀÇ (Å¬·£Â¡ µ¥ÀÌÅÍ Á¸ÀçÇÏ´ÂÁö ¿©ºÎ)
+		//as-is ë°ì´í„° ì •ì˜ (í´ëœì§• ë°ì´í„° ì¡´ì¬í•˜ëŠ”ì§€ ì—¬ë¶€)
 		boolean validationResult = analysis.validationAsisDefinition(schemaInfoList);
 
-		//ÃÖÁ¾ »çÀü °ËÁõ °á°ú Report
+		//ìµœì¢… ì‚¬ì „ ê²€ì¦ ê²°ê³¼ Report
 		boolean analysisResult = analysis.anaysisReport();
 		
 		System.out.println("isConvertable : " + isConvertable);
