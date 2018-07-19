@@ -3,7 +3,6 @@ package analysis;
 import java.util.List;
 import analysis.model.SchemaInfo;
 import analysis.service.AnalysisService;
-import utils.CommonUtil;
 
 public class Analysis {
 	
@@ -11,9 +10,9 @@ public class Analysis {
 
 	public static void main(String[] args) {
 
-		for(int i =0;i<10000;i++) {
-			System.out.println(CommonUtil.generateUniqueId());
-		}
+//		for(int i =0;i<10000;i++) {
+//			System.out.println(CommonUtil.generateUniqueId());
+//		}
 
 		AnalysisService analysis = new AnalysisService();
 		
