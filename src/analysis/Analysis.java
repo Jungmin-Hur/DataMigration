@@ -1,16 +1,20 @@
 package analysis;
 
 import java.util.List;
-
 import analysis.model.SchemaInfo;
 import analysis.service.AnalysisService;
+import utils.CommonUtil;
 
 public class Analysis {
 	
 	private static String SCHEMAINFO_FILE_NAME = "D:\\ECLIPSE\\workspace\\DataMigration\\src\\SchemaInfo.txt"; //TODO argument로 변경예정
 
 	public static void main(String[] args) {
-		
+
+		for(int i =0;i<10000;i++) {
+			System.out.println(CommonUtil.generateUniqueId());
+		}
+
 		AnalysisService analysis = new AnalysisService();
 		
 		//스키마정보, 데이터 정의 -> model로 데이터 converting
