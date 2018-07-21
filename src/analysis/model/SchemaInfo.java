@@ -2,6 +2,7 @@ package analysis.model;
 
 import java.util.Date;
 
+@Deprecated
 public class SchemaInfo {
 
 	private String id; // id
