@@ -8,6 +8,7 @@ public class SourceInfo {
 	private TargetInfo targetInfo;
 	private String tableName;
 	private String columnName;
+	private String columnType;
 	private String validationQuery;
 	private Date createdDate;
 	private Date updatedDate;
@@ -35,6 +36,12 @@ public class SourceInfo {
 	}
 	public void setColumnName(String columnName) {
 		this.columnName = columnName;
+	}
+	public String getColumnType() {
+		return columnType;
+	}
+	public void setColumnType(String columnType) {
+		this.columnType = columnType;
 	}
 	public String getValidationQuery() {
 		return validationQuery;

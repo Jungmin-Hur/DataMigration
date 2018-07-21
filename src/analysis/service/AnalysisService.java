@@ -10,12 +10,12 @@ import java.util.List;
 import java.util.Map;
 
 import analysis.biz.ConvertSchemaBiz;
+import analysis.biz.ValidationSchemaBiz;
+import analysis.model.Constants;
 import analysis.model.SourceInfo;
 
 public class AnalysisService implements IAnalysisService {
 
-	public final String DELIMINATOR = "\\t";
-	
 	public Map<String,SourceInfo> loadSchemaInfoFromFile(String filename) {
 		
 		System.out.println("loadSchemaInfoFromFile started!!");
@@ -29,7 +29,7 @@ public class AnalysisService implements IAnalysisService {
 			String line = br.readLine(); // The first line is ignored
 			
 			while(line != null) {
-				String str[] = line.split(DELIMINATOR);
+				String str[] = line.split(Constants.DELIMINATOR);
 				
 				convertSchemaBiz.isValidLine(lineCount+1, str); //TODO Exception 추가 필요
 
@@ -53,12 +53,21 @@ public class AnalysisService implements IAnalysisService {
 		
 		System.out.println((sourceInfoMap.size()-1) + " sourceInfoMaps are loaded.");
 		System.out.println("loadSchemaInfoFromFile finished!!");
-		
+
 		return sourceInfoMap;
 	}
 	
 	public boolean isConvertableBetweenAsisAndTobe(List<SourceInfo> SourceInfoList) {
-		return true;
+		ValidationSchemaBiz validationSchemaBiz = new ValidationSchemaBiz();
+		boolean result = true;
+		for(SourceInfo sourceInfo : SourceInfoList) {
+			boolean itemResult = validationSchemaBiz.isAvailableConverting(sourceInfo.getColumnType(), sourceInfo.getTargetInfo().getColumnType());
+			if(!itemResult) {
+				System.out.println("couldn't converting columns"); //TODO Need more logging
+				result = false;
+			}
+		}
+		return result; //전체 결과
 	}
 	
 	public boolean validationAsisDefinition(List<SourceInfo> SourceInfoList){
