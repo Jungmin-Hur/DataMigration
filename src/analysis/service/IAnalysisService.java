@@ -20,7 +20,7 @@ public interface IAnalysisService {
 	 * @param schemaInfoList
 	 * @return
 	 */
-	public boolean isConvertableBetweenAsisAndTobe(List<SourceInfo> SourceInfoList);
+	public boolean isConvertableBetweenAsisAndTobe(Map<String, SourceInfo> sourceInfoMap);
 	
 	/**
 	 * AS-IS 데이터 정의 검증 (클랜징 데이터 존재 여부)

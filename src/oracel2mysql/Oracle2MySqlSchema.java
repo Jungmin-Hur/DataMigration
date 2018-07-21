@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import analysis.model.Constants;
+
 public class Oracle2MySqlSchema {
 	
 	static Map<String, List<String>> oracle2MySqlSchema = new HashMap<>();
@@ -15,7 +17,7 @@ public class Oracle2MySqlSchema {
 				,{"VARCHAR4", "VARCHAR5"}
 				,{"VARCHAR6", "VARCHAR7", "VARCHAR8"}
 				,{"VARCHAR9"}
-				,{"VARCHAR10", "VARCHAR11", "VARCHAR12", "VARCHAR13", "VARCHAR14"}
+				,{"VARCHAR(10)", "VARCHAR(10)", "VARCHAR(20)", "VARCHAR13", "VARCHAR14"}
 				,{"VARCHAR14", "VARCHAR15"}
 		};
 	
@@ -48,9 +50,9 @@ public class Oracle2MySqlSchema {
 	 */
 	public static void availableConvertColumnsPrint(String columnType) {
 		List<String> list =  oracle2MySqlSchema.get(columnType);
-		System.out.print(columnType + ":");
+		System.out.print(columnType + Constants.DELIMINATOR);
 		for(String item : list) {
-			System.out.print(item + ",");
+			System.out.print(item + Constants.COMMA);
 		}
 		System.out.println("");
 	}

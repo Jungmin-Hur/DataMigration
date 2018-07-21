@@ -14,11 +14,8 @@ public class ValidationSchemaBiz {
 	public boolean isAvailableConverting(String sourceType, String targetType) {
 		List<String> availableList = Oracle2MySqlSchema.availableConvertColumns(sourceType);
 		boolean available = false;
-		for(String item : availableList) {
-			if(targetType.equals(item)) {
-				available = true;
-				break;
-			}
+		if(availableList.contains(targetType)) {
+			available = true;
 		}
 		return available;
 	}
