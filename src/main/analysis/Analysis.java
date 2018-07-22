@@ -8,17 +8,17 @@ import main.db.oracle.MyOracleConnection;
 import main.oracel2mysql.Oracle2MySqlSchemaMappingInfo;
 
 public class Analysis {
-	//TODO 전체적으로 Exception만들어서 throw처리해야함
-	//TODO 로그 파일 떨어지는 부분, 일단 파일로 만들고 나중에 LOG4J
-	//TODO maven 고민해볼 것 (log4j같은거)
-	//TODO oracle2mysqlschema데이터 property로 빼는 것 검토해볼 것
-	//TODO Report는 html하는건 어떨지
-	
+
 	private static String SCHEMAINFO_FILE_NAME = "D:\\ECLIPSE\\workspace\\DataMigration\\src\\SchemaInfo.Txt"; //TODO argument로 변경예정
 
 	public static void main(String[] args) {
-
 		setup();
+		//connection test
+//		if(MyOracleConnection.getConnection() == null) {
+//			System.out.println("not connected");
+//		} else {
+//			System.out.println("connected");
+//		}
 
 		AnalysisService analysis = new AnalysisService();
 		
@@ -32,18 +32,11 @@ public class Analysis {
 		boolean validationResult = analysis.validationAsisDefinition(sourceInfoList);
 
 		//최종 사전 검증 결과 Report
-		boolean analysisResult = analysis.anaysisReport();
+		boolean analysisResult = analysis.anaysisReport(); //TODO Implementation
 		
 		System.out.println("isConvertable : " + isConvertable);
 		System.out.println("validationResult : " + validationResult);
 		System.out.println("analysisResult : " + analysisResult);
-
-		//connection test
-//		if(MyOracleConnection.getConnection() == null) {
-//			System.out.println("not connected");
-//		} else {
-//			System.out.println("connected");
-//		}
 	}
 	
 	public static void setup() {

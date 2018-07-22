@@ -12,16 +12,20 @@ public class CommonUtil {
 	
 	public static int generatingKeyIndex = 0;
 	public static String generateUniqueId() {
+
 		StringBuffer sb = new StringBuffer();
 		sb.append(System.currentTimeMillis());
 		sb.append(String.format("%03d", (generatingKeyIndex = generatingKeyIndex % 1000)));
 		generatingKeyIndex++;
+		
 		return sb.toString();
 	}
 	
 	public static String prettyStringListPrint(List<String> list) {
+
 		StringBuffer sb = new StringBuffer();
 		int index = 0;
+		
 		for(String item : list) {
 			String str = item;
 			if(index == 0) {
@@ -32,6 +36,7 @@ public class CommonUtil {
 			index++;
 		}
 		System.out.println(sb.toString());
+
 		return sb.toString();
 	}
 

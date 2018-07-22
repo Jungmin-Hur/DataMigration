@@ -17,6 +17,7 @@ public class ValidationSchemaBiz {
 		if(availableList.contains(targetType)) {
 			available = true;
 		}
+
 		return available;
 	}
 }

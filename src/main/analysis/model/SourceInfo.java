@@ -3,7 +3,6 @@ package main.analysis.model;
 import java.util.Date;
 
 public class SourceInfo {
-	
 	private String id;
 	private TargetInfo targetInfo;
 	private String tableName;

@@ -19,23 +19,23 @@ import main.analysis.model.SourceInfo;
 import main.db.oracle.MyOracleExecutor;
 
 public class AnalysisService implements IAnalysisService {
-	
 	public List<SourceInfo> loadSchemaInfoFromFile(String filename) {
-		
 		SchemaFileBiz schemaFileBiz = new SchemaFileBiz();
+
 		boolean isVaildFileExtensions = schemaFileBiz.isValidFileExtensions(filename);
 		if(!isVaildFileExtensions) {
 			return null;
 		}
+		
 		boolean isValidFileContent = schemaFileBiz.isValidFileContent(filename);
 		if(!isValidFileContent) {
 			return null;
 		}
+
 		return loadSchemaInfo(filename);
 	}
 		
 	private List<SourceInfo> loadSchemaInfo(String filename) {
-		
 		System.out.println("Start Loading SchemaInfo From File!!");
 		
 		List<SourceInfo> sourceInfoList = new ArrayList<>();
@@ -79,13 +79,11 @@ public class AnalysisService implements IAnalysisService {
 		} else {
 			System.out.println("Finish Loading SchemaInfo From File!! " + sourceInfoMap.size() + " items are loaded.");
 		}
-		
 
 		return sourceInfoList;
 	}
 	
 	public boolean isConvertableBetweenAsisAndTobe(List<SourceInfo> sourceInfoList) {
-
 		ValidationSchemaBiz validationSchemaBiz = new ValidationSchemaBiz();
 		
 		boolean result = true;
@@ -96,18 +94,18 @@ public class AnalysisService implements IAnalysisService {
 					|| Constants.NOT_APPLICABLE.equals(sourceInfo.getTargetInfo().getColumnType())) {
 				continue;
 			}
+
 			boolean itemResult = validationSchemaBiz.isAvailableConverting(sourceInfo.getColumnType(), sourceInfo.getTargetInfo().getColumnType());
 			if(!itemResult) {
 				System.out.println("it doesnot support column type.(" + sourceInfo.getColumnType() + "/" + sourceInfo.getTargetInfo().getColumnType() +")"); //TODO Need more logging
 				result = false;
-			}			
+			}
 		}
 		
 		return result; //전체 결과
 	}
 	
 	public boolean validationAsisDefinition(List<SourceInfo> sourceInfoList){
-		
 		System.out.println("Start Check SourceData With Source Validation Queries!! ----------");
 		
 		String localResult = "";
@@ -131,7 +129,8 @@ public class AnalysisService implements IAnalysisService {
 			System.out.println("Finish Check SourceData With Source Validation Queries!! All data is valid.----------");
 		} else {
 			System.out.println("Finish Check SourceData With Source Validation Queries But there are " + invalidCount + " invalid items.----------");
-		}		
+		}
+		
 		return isValidAsisDefinition;
 	}
 	

@@ -16,6 +16,7 @@ public class SchemaFileBiz {
 	 */
 	public boolean isValidFileExtensions(String filename) {
 		System.out.println("Start Checking File Extension. Filename : " + filename);
+		
 		boolean isValidFile = isValidFileExtension(filename.toUpperCase());
 		if(!isValidFile) {
 			System.out.println("Not supported File extension (Only .txt is allowed) ");
@@ -24,6 +25,7 @@ public class SchemaFileBiz {
 		}else {
 			System.out.println("Finish Checking File Extension. : Vaild File Extension!!");
 		}
+		
 		return isValidFile;
 	}
 	
@@ -78,6 +80,7 @@ public class SchemaFileBiz {
 		}else {
 			System.out.println("Finish Checking File Contents. : Vaild File Contents !!");
 		}
+
 		return isValidFileContent;
 	}
 	

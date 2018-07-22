@@ -11,6 +11,7 @@ public class ConvertSchemaBiz {
 
 	public boolean isDuplicatedSchemaInfo(Map<String, SourceInfo> sourceInfoMap, String mapKey) {
 		boolean isDuplicatedSchemaInfo = false;
+		
 		if(sourceInfoMap.get(mapKey) != null) {
 			String str[] = mapKey.split("\\" + Constants.POINT);
 			if(str.length == 4) {
@@ -20,6 +21,7 @@ public class ConvertSchemaBiz {
 			}
 			isDuplicatedSchemaInfo = true;
 		}
+
 		return isDuplicatedSchemaInfo;
 	}
 
@@ -29,6 +31,7 @@ public class ConvertSchemaBiz {
 			.append(sourceInfo.getColumnName()).append(Constants.POINT)
 			.append(sourceInfo.getTargetInfo().getTableName()).append(Constants.POINT)
 			.append(sourceInfo.getTargetInfo().getColumnName()).append(Constants.POINT);
+		
 		return sb.toString();
 	}
 	
