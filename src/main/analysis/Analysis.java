@@ -1,9 +1,10 @@
 package main.analysis;
 
-import java.util.Map;
+import java.util.List;
 
 import main.analysis.model.SourceInfo;
 import main.analysis.service.AnalysisService;
+import main.db.oracle.MyOracleConnection;
 import main.oracel2mysql.Oracle2MySqlSchemaMappingInfo;
 
 public class Analysis {
@@ -22,23 +23,31 @@ public class Analysis {
 		AnalysisService analysis = new AnalysisService();
 		
 		//스키마정보, 데이터 정의 -> model로 데이터 converting
-		Map<String, SourceInfo> sourceInfoMap = analysis.loadSchemaInfoFromFile(SCHEMAINFO_FILE_NAME);
+		List<SourceInfo> sourceInfoList = analysis.loadSchemaInfoFromFile(SCHEMAINFO_FILE_NAME);
 		
 		//as-is, to-be 스키마 검증
-		boolean isConvertable = analysis.isConvertableBetweenAsisAndTobe(sourceInfoMap);
+		boolean isConvertable = analysis.isConvertableBetweenAsisAndTobe(sourceInfoList);
 
 		//as-is 데이터 정의 (클랜징 데이터 존재하는지 여부)
-//		boolean validationResult = analysis.validationAsisDefinition(sourceInfoList);
+		boolean validationResult = analysis.validationAsisDefinition(sourceInfoList);
 
 		//최종 사전 검증 결과 Report
-//		boolean analysisResult = analysis.anaysisReport();
+		boolean analysisResult = analysis.anaysisReport();
 		
 		System.out.println("isConvertable : " + isConvertable);
-//		System.out.println("validationResult : " + validationResult);
-//		System.out.println("analysisResult : " + analysisResult);
+		System.out.println("validationResult : " + validationResult);
+		System.out.println("analysisResult : " + analysisResult);
+
+		//connection test
+//		if(MyOracleConnection.getConnection() == null) {
+//			System.out.println("not connected");
+//		} else {
+//			System.out.println("connected");
+//		}
 	}
 	
 	public static void setup() {
 		Oracle2MySqlSchemaMappingInfo loadSchema = new Oracle2MySqlSchemaMappingInfo(); //Load Schema Data
+		MyOracleConnection oracleConnection = new MyOracleConnection(); //Load Oracle Connection
 	}
 }

@@ -17,5 +17,4 @@ class Oracle2MySqlSchemaMappingInfoTest {
 		CommonUtil.prettyStringListPrint(Oracle2MySqlSchemaMappingInfo.availableConvertColumns("VARCHAR"));
 		assertEquals(Oracle2MySqlSchemaMappingInfo.availableConvertColumns("VARCHAR").size(), 2);
 	}
-	
 }

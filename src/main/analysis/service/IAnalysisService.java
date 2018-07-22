@@ -1,7 +1,6 @@
 package main.analysis.service;
 
 import java.util.List;
-import java.util.Map;
 
 import main.analysis.model.SourceInfo;
 
@@ -12,7 +11,7 @@ public interface IAnalysisService {
 	 * @param filename
 	 * @return List<SchemaInfo>
 	 */
-	public Map<String,SourceInfo> loadSchemaInfoFromFile(String filename);
+	public List<SourceInfo> loadSchemaInfoFromFile(String filename);
 	
 	/**
 	 * as-is, to-be 스키마 검증
@@ -20,14 +19,14 @@ public interface IAnalysisService {
 	 * @param schemaInfoList
 	 * @return
 	 */
-	public boolean isConvertableBetweenAsisAndTobe(Map<String, SourceInfo> sourceInfoMap);
+	public boolean isConvertableBetweenAsisAndTobe(List<SourceInfo> sourceInfoList);
 	
 	/**
 	 * AS-IS 데이터 정의 검증 (클랜징 데이터 존재 여부)
 	 * 실데이터와 확인해야 함
 	 * @return
 	 */
-	public boolean validationAsisDefinition(List<SourceInfo> SourceInfoList);
+	public boolean validationAsisDefinition(List<SourceInfo> sourceInfoList);
 
 	/**
 	 * file read하여 stdout에 결과 보여주기

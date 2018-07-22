@@ -22,7 +22,7 @@ public class ConvertSchemaBiz {
 		}
 		return isDuplicatedSchemaInfo;
 	}
-	
+
 	public String makeMapKey(SourceInfo sourceInfo) {
 		StringBuffer sb = new StringBuffer();
 		sb.append(sourceInfo.getTableName()).append(Constants.POINT)

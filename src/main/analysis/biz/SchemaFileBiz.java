@@ -10,7 +10,7 @@ import main.analysis.model.Constants;
 
 public class SchemaFileBiz {
 	/**
-	 * 파일 확장자 체크 (.txt만 가능)
+	 * 정상 파일 여부
 	 * @param filename
 	 * @return
 	 */
@@ -28,7 +28,7 @@ public class SchemaFileBiz {
 	}
 	
 	/**
-	 * 정상 파일 여부 (.txt파일만 정상임)
+	 * 파일 확장자 체크 (.txt파일만 정상임)
 	 * @param filename
 	 * @return
 	 */
@@ -65,7 +65,7 @@ public class SchemaFileBiz {
 				lineNum++;
 				line = br.readLine();
 			}
-			br.close();			
+			br.close();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
