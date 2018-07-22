@@ -11,8 +11,9 @@ public class Analysis {
 	//TODO 로그 파일 떨어지는 부분, 일단 파일로 만들고 나중에 LOG4J
 	//TODO maven 고민해볼 것 (log4j같은거)
 	//TODO oracle2mysqlschema데이터 property로 빼는 것 검토해볼 것
+	//TODO Report는 html하는건 어떨지
 	
-	private static String SCHEMAINFO_FILE_NAME = "D:\\ECLIPSE\\workspace\\DataMigration\\src\\SchemaInfo.txt"; //TODO argument로 변경예정
+	private static String SCHEMAINFO_FILE_NAME = "D:\\ECLIPSE\\workspace\\DataMigration\\src\\SchemaInfo.Txt"; //TODO argument로 변경예정
 
 	public static void main(String[] args) {
 

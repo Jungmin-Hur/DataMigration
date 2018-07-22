@@ -9,18 +9,18 @@ import main.utils.CommonUtil;
 
 public class ConvertSchemaBiz {
 
-	//TODO data[] 구조 개선 필요..
-	public boolean isValidLine(int lineNum, String data[]) {
-		if(data.length != 10) { // 빈줄은 data.length가 1로 들어있어서 여기서 걸림
-			System.out.println("line:" + lineNum + "; invalid data format.; data length:" + data.length);
-			return false;
+	public boolean isDuplicatedSchemaInfo(Map<String, SourceInfo> sourceInfoMap, String mapKey) {
+		boolean isDuplicatedSchemaInfo = false;
+		if(sourceInfoMap.get(mapKey) != null) {
+			String str[] = mapKey.split("\\" + Constants.POINT);
+			if(str.length == 4) {
+				System.out.println("Exist Duplicated Schema Info Input. Source (" + str[0] + "/" + str[1] + ") Target (" + str[2] + "/" + str[3] + ")");
+			} else {
+				System.out.println("Exist Duplicated Schema Info Input.");
+			}
+			isDuplicatedSchemaInfo = true;
 		}
-		return true;
-	}
-	
-	//TODO Template으로 나중에 변경할 것...
-	public boolean isExistMap(Map<String, SourceInfo> sourceInfoMap, String mapKey) {
-		return sourceInfoMap.get(mapKey) == null ? false : true;
+		return isDuplicatedSchemaInfo;
 	}
 	
 	public String makeMapKey(SourceInfo sourceInfo) {
@@ -34,13 +34,15 @@ public class ConvertSchemaBiz {
 	
 	public SourceInfo makeSchemaInfo(String data[]){
 		SourceInfo sourceInfo = new SourceInfo();
+		TargetInfo targetInfo = new TargetInfo();
+		
 		sourceInfo.setId(CommonUtil.generateUniqueId());
 		sourceInfo.setTableName(data[0]);
 		sourceInfo.setColumnName(data[1]);
 		sourceInfo.setColumnType(data[2]);
 		sourceInfo.setValidationQuery(data[3]);
-		
-		TargetInfo targetInfo = new TargetInfo();
+		sourceInfo.setTargetInfo(targetInfo);
+
 		targetInfo.setId(CommonUtil.generateUniqueId());
 		targetInfo.setTableName(data[4]);
 		targetInfo.setColumnName(data[5]);
@@ -48,8 +50,6 @@ public class ConvertSchemaBiz {
 		targetInfo.setValidationQuery(data[7]);
 		targetInfo.setMappingDefinition(data[8]);
 		targetInfo.setMappingLimitation(data[9]);
-		
-		sourceInfo.setTargetInfo(targetInfo);
 		targetInfo.setSourceInfo(sourceInfo);
 		
 		return sourceInfo;

@@ -12,40 +12,52 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import main.analysis.biz.ConvertSchemaBiz;
+import main.analysis.biz.SchemaFileBiz;
 import main.analysis.biz.ValidationSchemaBiz;
 import main.analysis.model.Constants;
 import main.analysis.model.SourceInfo;
 
 public class AnalysisService implements IAnalysisService {
-
+	
 	public Map<String,SourceInfo> loadSchemaInfoFromFile(String filename) {
+		SchemaFileBiz schemaFileBiz = new SchemaFileBiz();
+		boolean isVaildFileExtensions = schemaFileBiz.isValidFileExtensions(filename);
+		if(!isVaildFileExtensions) {
+			return null;
+		}
+		boolean isValidFileContent = schemaFileBiz.isValidFileContent(filename);
+		if(!isValidFileContent) {
+			return null;
+		}
+		return loadSchemaInfo(filename);
+	}
 		
-		System.out.println("loadSchemaInfoFromFile started!!");
+	private Map<String,SourceInfo> loadSchemaInfo(String filename) {
+		System.out.println("Start Loading SchemaInfo From File!!");
 		
 		ConvertSchemaBiz convertSchemaBiz = new ConvertSchemaBiz();
 		Map<String, SourceInfo> sourceInfoMap = new HashMap<>();
+		
+		boolean isDuplicatedSchemaInfo = false;
 
 		try {
 			BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(filename)));
-			int lineCount = 0;
-			String line = br.readLine(); // The first line is ignored
+			String line = br.readLine();
 			
 			while(line != null) {
 				if(!line.startsWith(Constants.SHARP)) { // #로 시작하는 경우 읽지 않음(주석처리) 
 
 					String str[] = line.split(Constants.DELIMINATOR);
-					
-					convertSchemaBiz.isValidLine(lineCount+1, str); //TODO 멈추던지 뭔가 처리 있어야 함, Need more logging
-	
 					SourceInfo sourceInfo = convertSchemaBiz.makeSchemaInfo(str);
 					String mapKey = convertSchemaBiz.makeMapKey(sourceInfo);
-					if(convertSchemaBiz.isExistMap(sourceInfoMap, mapKey)) {
-						System.out.println("exist duplicat definition");
-					}else {
+					isDuplicatedSchemaInfo = convertSchemaBiz.isDuplicatedSchemaInfo(sourceInfoMap, mapKey);
+					
+					if(isDuplicatedSchemaInfo) {
+						break;
+					} else {
 						sourceInfoMap.put(mapKey, sourceInfo);
 					}
 				}
-				lineCount++;
 				line = br.readLine();
 			}
 			br.close();
@@ -55,8 +67,13 @@ public class AnalysisService implements IAnalysisService {
 			e.printStackTrace();
 		}
 		
-		System.out.println((sourceInfoMap.size()) + " sourceInfoMaps are loaded.");
-		System.out.println("loadSchemaInfoFromFile finished!!");
+		if(isDuplicatedSchemaInfo) {
+			System.out.println("Exist Duplicated Input(s). Loading SchemaInfo From File is failed.");
+			return null;
+		} else {
+			System.out.println("Finish Loading SchemaInfo From File!! " + sourceInfoMap.size() + " items are loaded.");
+		}
+		
 
 		return sourceInfoMap;
 	}
