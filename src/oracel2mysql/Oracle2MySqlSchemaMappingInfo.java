@@ -7,7 +7,7 @@ import java.util.Map;
 
 import analysis.model.Constants;
 
-public class Oracle2MySqlSchema {
+public class Oracle2MySqlSchemaMappingInfo {
 	
 	static Map<String, List<String>> oracle2MySqlSchema = new HashMap<>();
 
@@ -21,7 +21,7 @@ public class Oracle2MySqlSchema {
 				,{"VARCHAR14", "VARCHAR15"}
 		};
 	
-	public Oracle2MySqlSchema(){
+	public Oracle2MySqlSchemaMappingInfo(){
 		System.out.println("loading oracle2mysqlschema start");
 		for(int i = 0; i<oracle2MySqlRawData.length; i++) {
 			List<String> convertableList = new ArrayList<>();

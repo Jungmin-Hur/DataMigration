@@ -1,4 +1,5 @@
-package test;
+package oracel2mysql;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.ArrayList;

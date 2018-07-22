@@ -4,7 +4,7 @@ import java.util.Map;
 
 import analysis.model.SourceInfo;
 import analysis.service.AnalysisService;
-import oracel2mysql.Oracle2MySqlSchema;
+import oracel2mysql.Oracle2MySqlSchemaMappingInfo;
 
 public class Analysis {
 	//TODO 전체적으로 Exception만들어서 throw처리해야함
@@ -38,6 +38,6 @@ public class Analysis {
 	}
 	
 	public static void setup() {
-		Oracle2MySqlSchema loadSchema = new Oracle2MySqlSchema(); //Load Schema Data
+		Oracle2MySqlSchemaMappingInfo loadSchema = new Oracle2MySqlSchemaMappingInfo(); //Load Schema Data
 	}
 }
