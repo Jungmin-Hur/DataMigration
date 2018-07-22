@@ -18,7 +18,7 @@ public class Oracle2MySqlSchemaMappingInfo {
 				,{"VARCHAR6", "VARCHAR7", "VARCHAR8"}
 				,{"VARCHAR9"}
 				,{"VARCHAR(10)", "VARCHAR(10)", "VARCHAR(20)", "VARCHAR13", "VARCHAR14"}
-				,{"VARCHAR14", "VARCHAR15"}
+				,{"VARCHAR", "VARCHAR"}
 		};
 	
 	public Oracle2MySqlSchemaMappingInfo(){

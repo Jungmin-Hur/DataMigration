@@ -26,7 +26,13 @@ public class Analysis {
 		List<SourceInfo> sourceInfoList = analysis.loadSchemaInfoFromFile(SCHEMAINFO_FILE_NAME);
 		
 		//as-is, to-be 스키마 검증
+		//TODO 여기서는 VARCHAR에서 길이체크는 하지 않아도 됨
 		boolean isConvertable = analysis.isConvertableBetweenAsisAndTobe(sourceInfoList);
+
+		//TODO Schema간 비교
+		//AS-IS와 TO-BE가 호환되는지 여부 (ex. VARCHAR10은 VARCHAR20과 호환됨)
+		//TODO Model추가되어야 함. 데이터 타입은 string, date, int 셋 중 하나임
+		//데이터 타입에 따라서 schema 비교가 달라짐
 
 		//as-is 데이터 정의 (클랜징 데이터 존재하는지 여부)
 		boolean validationResult = analysis.validationAsisDefinition(sourceInfoList);
