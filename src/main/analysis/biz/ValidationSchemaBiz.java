@@ -2,7 +2,7 @@ package main.analysis.biz;
 
 import java.util.List;
 
-import main.oracel2mysql.Oracle2MySqlSchemaMappingInfo;
+import main.common.oracel2mysql.Oracle2MySqlSchemaMappingInfo;
 
 public class ValidationSchemaBiz {
 	/**

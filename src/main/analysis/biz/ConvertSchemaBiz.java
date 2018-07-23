@@ -5,7 +5,7 @@ import java.util.Map;
 import main.analysis.model.Constants;
 import main.analysis.model.SourceInfo;
 import main.analysis.model.TargetInfo;
-import main.utils.CommonUtil;
+import main.common.utils.CommonUtil;
 
 public class ConvertSchemaBiz {
 

@@ -9,7 +9,7 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
-import main.utils.CommonUtil;
+import main.common.utils.CommonUtil;
 
 class CommonUtilTest {
 	

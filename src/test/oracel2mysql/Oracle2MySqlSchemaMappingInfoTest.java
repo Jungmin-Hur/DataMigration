@@ -4,8 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
-import main.oracel2mysql.Oracle2MySqlSchemaMappingInfo;
-import main.utils.CommonUtil;
+import main.common.oracel2mysql.Oracle2MySqlSchemaMappingInfo;
+import main.common.utils.CommonUtil;
 
 class Oracle2MySqlSchemaMappingInfoTest {
 	

@@ -1,4 +1,4 @@
-package main.oracel2mysql;
+package main.common.oracel2mysql;
 
 import java.util.ArrayList;
 import java.util.HashMap;

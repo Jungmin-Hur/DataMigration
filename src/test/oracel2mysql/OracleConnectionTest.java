@@ -1,10 +1,14 @@
 package test.oracel2mysql;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.Properties;
 
 import org.junit.jupiter.api.Test;
 
@@ -30,5 +34,25 @@ class OracleConnectionTest {
 		assertNotNull(connection);
 
 		connection.close();
+	}
+	
+	@Test
+	void PropertiesTest() {
+		String path = "/test/resources/db.properties";
+		InputStream inputStream = getClass().getResourceAsStream(path);
+		Properties properties = new Properties();
+		try {
+			properties.load(inputStream);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		try {
+			inputStream.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		String oracleServer = properties.getProperty("oracle.server"); 
+		assertEquals("localhost", oracleServer);
 	}
 }

@@ -4,8 +4,8 @@ import java.util.List;
 
 import main.analysis.model.SourceInfo;
 import main.analysis.service.AnalysisService;
+import main.common.oracel2mysql.Oracle2MySqlSchemaMappingInfo;
 import main.db.oracle.MyOracleConnection;
-import main.oracel2mysql.Oracle2MySqlSchemaMappingInfo;
 
 public class Analysis {
 

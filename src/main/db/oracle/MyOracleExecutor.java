@@ -9,7 +9,7 @@ public class MyOracleExecutor {
 
 	public static String queryExecutor(String query) throws SQLException {
 		Connection conn = MyOracleConnection.getConnection();
-		
+
 		Statement stmt = null;
 		String result = "";
 		try {
@@ -17,7 +17,7 @@ public class MyOracleExecutor {
 			ResultSet rs = stmt.executeQuery(query);
 			rs.next();
 			result = rs.getString(1);
-//			System.out.println(result);
+			// System.out.println(result);
 		} finally {
 			if (stmt != null) {
 				stmt.close();
