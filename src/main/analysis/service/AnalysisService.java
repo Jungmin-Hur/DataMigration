@@ -19,6 +19,7 @@ import main.analysis.model.SourceInfo;
 import main.db.oracle.MyOracleExecutor;
 
 public class AnalysisService implements IAnalysisService {
+
 	public List<SourceInfo> loadSchemaInfoFromFile(String filename) {
 		SchemaFileBiz schemaFileBiz = new SchemaFileBiz();
 
@@ -83,7 +84,7 @@ public class AnalysisService implements IAnalysisService {
 		return sourceInfoList;
 	}
 	
-	public boolean isConvertableBetweenAsisAndTobe(List<SourceInfo> sourceInfoList) {
+	public boolean isCompatibilityColumnType(List<SourceInfo> sourceInfoList) {
 		ValidationSchemaBiz validationSchemaBiz = new ValidationSchemaBiz();
 		
 		boolean result = true;
@@ -95,43 +96,67 @@ public class AnalysisService implements IAnalysisService {
 				continue;
 			}
 
-			boolean itemResult = validationSchemaBiz.isAvailableConverting(sourceInfo.getColumnType(), sourceInfo.getTargetInfo().getColumnType());
-			if(!itemResult) {
-				System.out.println("it doesnot support column type.(" + sourceInfo.getColumnType() + "/" + sourceInfo.getTargetInfo().getColumnType() +")"); //TODO Need more logging
+			boolean available = validationSchemaBiz.checkColumnType(sourceInfo.getColumnType(), sourceInfo.getTargetInfo().getColumnType());
+			if(!available) {
+				System.out.println("[Error] it doesnot support column type.(" + sourceInfo.getColumnType() + "/" + sourceInfo.getTargetInfo().getColumnType() +")"); //TODO Need more logging
 				result = false;
 			}
 		}
-		
 		return result; //전체 결과
 	}
 	
-	public boolean validationAsisDefinition(List<SourceInfo> sourceInfoList){
-		System.out.println("Start Check SourceData With Source Validation Queries!! ----------");
+	public boolean isCompatibilityColumnSize(List<SourceInfo> sourceInfoList) {
+		ValidationSchemaBiz validationSchemaBiz = new ValidationSchemaBiz();
+		
+		boolean result = true;
+
+		for(SourceInfo sourceInfo : sourceInfoList) {
+			// N/A 항목은 전환 가능 여부에 대해 판단하지 않음 
+			if(Constants.NOT_APPLICABLE.equals(sourceInfo.getColumnSize()) 
+					|| Constants.NOT_APPLICABLE.equals(sourceInfo.getTargetInfo().getColumnSize())) {
+				continue;
+			}
+
+			//TODO 0,0 타입도 확인이 필요함
+			boolean available = validationSchemaBiz.checkColumnSize(sourceInfo.getColumnSize(), sourceInfo.getTargetInfo().getColumnSize());
+			if(!available) {
+				System.out.println("[Warning] Target Column Size보다 Source Column Size보다 큽니다. " + sourceInfo.getColumnSize() + "/" + sourceInfo.getTargetInfo().getColumnSize() +")");
+				result = false;
+			}
+		}
+		return result; //전체 결과
+	}
+	
+	public boolean findCleansingData(List<SourceInfo> sourceInfoList){
+		System.out.println("Start Find Cleansing Data in Source !! ----------");
 		
 		String localResult = "";
 		int invalidCount = 0;
-		boolean isValidAsisDefinition = true;
+		boolean isExistCleansingData = true;
 		for(SourceInfo sourceInfo :  sourceInfoList) {
+			
 			String query = sourceInfo.getValidationQuery();
-			try {
-				localResult = MyOracleExecutor.queryExecutor(query);
-				if(!localResult.equals("1")) {
-					System.out.println("Invalid Definition data. Query : " + query );
-					isValidAsisDefinition = false;
-					invalidCount++;
-				}
-			} catch (SQLException e) {
-				e.printStackTrace();
+			if(!Constants.NOT_APPLICABLE.equals(query)) {
+				try {
+					localResult = MyOracleExecutor.selectOneQueryExecutor(query);
+					if(!localResult.equals("1")) {
+						System.out.println("[Error] Invalid Definition data. Query : " + query );
+						isExistCleansingData = false;
+						invalidCount++;
+					}
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}				
 			}
 		}
 		
-		if(isValidAsisDefinition) {
-			System.out.println("Finish Check SourceData With Source Validation Queries!! All data is valid.----------");
+		if(isExistCleansingData) {
+			System.out.println("Finish Find Cleansing Data in Source !! There is no cleansing data.----------");
 		} else {
-			System.out.println("Finish Check SourceData With Source Validation Queries But there are " + invalidCount + " invalid items.----------");
+			System.out.println("Finish Find Cleansing Data in Source : " + invalidCount + " invalid data.----------");
 		}
 		
-		return isValidAsisDefinition;
+		return isExistCleansingData;
 	}
 	
 	public boolean anaysisReport(){

@@ -43,18 +43,38 @@ public class ConvertSchemaBiz {
 		sourceInfo.setTableName(data[0]);
 		sourceInfo.setColumnName(data[1]);
 		sourceInfo.setColumnType(data[2]);
-		sourceInfo.setValidationQuery(data[3]);
+		sourceInfo.setColumnSize(data[3]);
+		sourceInfo.setValidationQuery(data[4]);
 		sourceInfo.setTargetInfo(targetInfo);
 
 		targetInfo.setId(CommonUtil.generateUniqueId());
-		targetInfo.setTableName(data[4]);
-		targetInfo.setColumnName(data[5]);
-		targetInfo.setColumnType(data[6]);
-		targetInfo.setValidationQuery(data[7]);
-		targetInfo.setMappingDefinition(data[8]);
-		targetInfo.setMappingLimitation(data[9]);
+		targetInfo.setTableName(data[5]);
+		targetInfo.setColumnName(data[6]);
+		targetInfo.setColumnType(data[7]);
+		targetInfo.setColumnSize(data[8]);
+		targetInfo.setValidationQuery(data[9]);
+		targetInfo.setMappingDefinition(data[10]);
+		targetInfo.setMappingLimitation(data[11]);
 		targetInfo.setSourceInfo(sourceInfo);
 		
+		isValidSchemaInfo(sourceInfo);
+
 		return sourceInfo;
+	}
+	
+	private boolean isValidSchemaInfo(SourceInfo sourceInfo) {
+		boolean result = true;
+		
+		if(!Constants.NOT_APPLICABLE.equals(sourceInfo.getColumnSize()) && 
+				!CommonUtil.isStringNumber(sourceInfo.getColumnSize())) {
+			System.out.println("입력된 ColumnSize데이터에 숫자가 아닌 데이터가 존재합니다.");
+			result = false;
+		} 
+		if(!Constants.NOT_APPLICABLE.equals(sourceInfo.getTargetInfo().getColumnSize()) && 
+				!CommonUtil.isStringNumber(sourceInfo.getTargetInfo().getColumnSize())) {
+			System.out.println("입력된 ColumnSize데이터에 숫자가 아닌 데이터가 존재합니다.");
+			result = false;
+		} 
+		return result;
 	}
 }

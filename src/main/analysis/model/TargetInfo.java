@@ -8,13 +8,14 @@ public class TargetInfo {
 	private String tableName;
 	private String columnName;
 	private String columnType;
+	private String columnSize; //숫자 타입인 경우 0,0 형태로 입력될 수 있음
 	private String validationQuery;
 	private String mappingDefinition;
 	private String mappingLimitation;
 	private String mappingQuery; //TODO reserved. when mappingdefinition and mappinglimitation input, this value will be set.
 	private Date createdDate;
 	private Date updatedDate;
-
+	
 	public String getId() {
 		return id;
 	}
@@ -44,6 +45,12 @@ public class TargetInfo {
 	}
 	public void setColumnType(String columnType) {
 		this.columnType = columnType;
+	}
+	public String getColumnSize() {
+		return columnSize;
+	}
+	public void setColumnSize(String columnSize) {
+		this.columnSize = columnSize;
 	}
 	public String getValidationQuery() {
 		return validationQuery;

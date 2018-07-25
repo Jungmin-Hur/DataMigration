@@ -56,4 +56,18 @@ public class CommonUtil {
 		}
 		return sb.toString();
 	}
+	
+	/**
+	 * String 숫자 여부
+	 * @param str
+	 * @return
+	 */
+	public static boolean isStringNumber(String str) {
+		try {
+			Integer.parseInt(str);
+			return true;
+		} catch (NumberFormatException e) {
+			return false;
+		}
+	}
 }

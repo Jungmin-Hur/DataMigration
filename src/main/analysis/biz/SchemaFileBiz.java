@@ -59,7 +59,7 @@ public class SchemaFileBiz {
 				if(!line.startsWith(Constants.SHARP)) { // #로 시작하는 경우 읽지 않음(주석처리) 
 					String str[] = line.split(Constants.DELIMINATOR);
 					if(!isValidColumnNumPerRow(str)) {
-						System.out.println("Line Num : " + lineNum); //잘못된 모든 row를 찍기 위해서 멈추지 않음
+						System.out.println(lineNum + "번째 열 : Column 수가 잘못 되었습니다."); //잘못된 모든 row를 찍기 위해서 멈추지 않음
 						isValidFileContent = false;
 						invalidCount++;
 					}
@@ -85,7 +85,7 @@ public class SchemaFileBiz {
 	}
 	
 	/**
-	 * 한줄에 10개 column이 입력되어야 함
+	 * 한줄에 12개 column이 입력되어야 함
 	 * @param data
 	 * @return
 	 */

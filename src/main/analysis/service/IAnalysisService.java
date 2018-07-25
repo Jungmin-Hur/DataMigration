@@ -14,19 +14,25 @@ public interface IAnalysisService {
 	public List<SourceInfo> loadSchemaInfoFromFile(String filename);
 	
 	/**
-	 * as-is, to-be 스키마 검증
-	 * 결과는 file write함
+	 * Source, Target Column Type 호환 체크
 	 * @param schemaInfoList
 	 * @return
 	 */
-	public boolean isConvertableBetweenAsisAndTobe(List<SourceInfo> sourceInfoList);
+	public boolean isCompatibilityColumnType(List<SourceInfo> sourceInfoList);
+	
+	/**
+	 * Source, Target Column 길이 호환 체크
+	 * @param sourceInfoList
+	 * @return
+	 */
+	public boolean isCompatibilityColumnSize(List<SourceInfo> sourceInfoList);
 	
 	/**
 	 * AS-IS 데이터 정의 검증 (클랜징 데이터 존재 여부)
 	 * 실데이터와 확인해야 함
 	 * @return
 	 */
-	public boolean validationAsisDefinition(List<SourceInfo> sourceInfoList);
+	public boolean findCleansingData(List<SourceInfo> sourceInfoList);
 
 	/**
 	 * file read하여 stdout에 결과 보여주기

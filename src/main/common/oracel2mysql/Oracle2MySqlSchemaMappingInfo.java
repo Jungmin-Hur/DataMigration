@@ -13,12 +13,17 @@ public class Oracle2MySqlSchemaMappingInfo {
 
 	static String[][] oracle2MySqlRawData =
 		{
-				{"VARCHAR", "VARCHAR2", "VARCHAR3"}
-				,{"VARCHAR4", "VARCHAR5"}
-				,{"VARCHAR6", "VARCHAR7", "VARCHAR8"}
-				,{"VARCHAR9"}
-				,{"VARCHAR(10)", "VARCHAR(10)", "VARCHAR(20)", "VARCHAR13", "VARCHAR14"}
-				,{"VARCHAR", "VARCHAR"}
+				{"VARCHAR", "VARCHAR", "BLOB", "CLOB"}
+				,{"VARCHAR1", "VARCHAR", "BLOB", "CLOB"}
+				,{"VARCHAR2", "VARCHAR", "BLOB", "CLOB"}
+				,{"VARCHAR3", "VARCHAR", "BLOB", "CLOB"}
+				,{"BIGINT", "INT", "INTEAGER"}
+				,{"BIGINT1", "INT", "INTEAGER"}
+				,{"BIGINT2", "INT", "INTEAGER"}
+				,{"BIGINT3", "INT", "INTEAGER"}
+				,{"BIGINT4", "INT", "INTEAGER"}
+				
+				,{"DATE", "DATE"}
 		};
 	
 	public Oracle2MySqlSchemaMappingInfo(){
