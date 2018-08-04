@@ -35,15 +35,15 @@ public class AnalysisService implements IAnalysisService {
 
 		return loadSchemaInfo(filename);
 	}
-		
+
 	private List<SourceInfo> loadSchemaInfo(String filename) {
 		System.out.println("Start Loading SchemaInfo From File!!");
-		
+
 		List<SourceInfo> sourceInfoList = new ArrayList<>();
 		Map<String, SourceInfo> sourceInfoMap = new HashMap<>(); //This valiable for checking the duplicated input
 
 		ConvertSchemaBiz convertSchemaBiz = new ConvertSchemaBiz();
-		
+
 		boolean isDuplicatedSchemaInfo = false;
 
 		try {
@@ -68,6 +68,7 @@ public class AnalysisService implements IAnalysisService {
 				line = br.readLine();
 			}
 			br.close();
+
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {

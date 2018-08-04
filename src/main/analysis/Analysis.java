@@ -4,8 +4,11 @@ import java.util.List;
 
 import main.analysis.model.SourceInfo;
 import main.analysis.service.AnalysisService;
+import main.common.model.MigrationProgressType;
 import main.common.oracel2mysql.Oracle2MySqlSchemaMappingInfo;
 import main.db.oracle.MyOracleConnection;
+import main.report.ReportAnalysisConnection;
+import main.report.ResultReportService;
 
 public class Analysis {
 
@@ -13,6 +16,7 @@ public class Analysis {
 
 	public static void main(String[] args) {
 		setup();
+		test();
 
 		AnalysisService analysis = new AnalysisService();
 		
@@ -36,11 +40,20 @@ public class Analysis {
 		System.out.println("Column Size Compatibility : " + isConvaertableColumnSize);
 		System.out.println("validationResult : " + validationResult);
 		System.out.println("analysisResult : " + analysisResult);
+		
+		finalizeConnections();
 	}
 	
 	public static void setup() {
 		Oracle2MySqlSchemaMappingInfo loadSchema = new Oracle2MySqlSchemaMappingInfo(); //Load Schema Data
 		MyOracleConnection oracleConnection = new MyOracleConnection(); //Load Oracle Connection
+		ReportAnalysisConnection reportAnalysisConnection = new ReportAnalysisConnection();
+		System.out.println(reportAnalysisConnection.getFilename());
+		System.out.println("oracle 서버 접속 : " + oracleConnection.getServer());
+	}
+	
+	public static void finalizeConnections() {
+		ReportAnalysisConnection.closeFileStream();
 	}
 	
 	public static void test() {
@@ -50,6 +63,19 @@ public class Analysis {
 		} else {
 			System.out.println("connected");
 		}
+
+		ResultReportService resultReportService1 = new ResultReportService();
+		ResultReportService resultReportService2 = new ResultReportService();
+		ResultReportService resultReportService3 = new ResultReportService();
+		ResultReportService resultReportService4 = new ResultReportService();
+		
+		resultReportService1.writeReport(MigrationProgressType.ANALYSIS, "1");
+		resultReportService2.writeReport(MigrationProgressType.PREMIGRATION, "2");
+		resultReportService1.writeReport(MigrationProgressType.MIGRATION, "3");
+		resultReportService3.writeReport(MigrationProgressType.ANALYSIS, "4");
+		resultReportService4.writeReport(MigrationProgressType.PREMIGRATION, "하하하");
+		resultReportService1.writeReport(MigrationProgressType.ANALYSIS, "5");
+		resultReportService2.writeReport(MigrationProgressType.PREMIGRATION, "호호호");
 
 	}
 }
