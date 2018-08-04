@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
-public class ReportAnalysisConnection {
+public class ReportAnalysisFileConnection {
 
 	private static String path;
 	private static String filename;
@@ -16,7 +16,7 @@ public class ReportAnalysisConnection {
 
 //	private static ReportAnalysisConnection reportAnalysisConnection = new ReportAnalysisConnection();
 
-	public ReportAnalysisConnection() {
+	public ReportAnalysisFileConnection() {
 		InputStream inputStream = getClass().getResourceAsStream(propertiesPath);
 		Properties properties = new Properties();
 		try {
@@ -28,7 +28,7 @@ public class ReportAnalysisConnection {
 			
 			//path는 empty체크하지 않음
 			if(prefix.isEmpty() || filename.isEmpty()) {
-				System.out.println("application.properties에 Analysis 결과 파일 경로 또는 파일명이 존재하지 않습니다.");
+				ResultReportService.writeAnalysisReport("application.properties에 report.filename.prefix, report.analysis.filename가 비어있어서 결과 파일 생성에 실패했습니다.");
 				return;
 			}
 		} catch (IOException e) {
@@ -37,11 +37,8 @@ public class ReportAnalysisConnection {
 		
 		try {
 			fileWriter = new FileWriter(path+prefix+filename, true); //set append option
-		
-//			fileWriter.close(); //삭제해야 함..
-
 		} catch (IOException e) {
-			System.out.println("Analysis 결과 파일 생성에 실패하였습니다.");
+			ResultReportService.writeAnalysisReport("Analysis 결과 파일 생성에 실패하였습니다.");
 			e.printStackTrace();
 		}
 	}
@@ -66,16 +63,13 @@ public class ReportAnalysisConnection {
 		try {
 			fileWriter.close();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 	
 	@Override
 	protected void finalize() throws Throwable {
-		System.out.println("finalllllllllllllllllllllllllllize");
 		fileWriter.close();
-
 		super.finalize();
 	}
 }

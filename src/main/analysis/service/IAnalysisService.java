@@ -34,9 +34,4 @@ public interface IAnalysisService {
 	 */
 	public boolean findCleansingData(List<SourceInfo> sourceInfoList);
 
-	/**
-	 * file read하여 stdout에 결과 보여주기
-	 * @return
-	 */
-	public boolean anaysisReport();
 }

@@ -27,7 +27,6 @@ public class Oracle2MySqlSchemaMappingInfo {
 		};
 	
 	public Oracle2MySqlSchemaMappingInfo(){
-		System.out.println("Start Loading Oracle2MySqlSchemaMappingInfo");
 		for(int i = 0; i<oracle2MySqlRawData.length; i++) {
 			List<String> convertableList = new ArrayList<>();
 			
@@ -36,7 +35,6 @@ public class Oracle2MySqlSchemaMappingInfo {
 			}
 			oracle2MySqlSchema.put(oracle2MySqlRawData[i][0], convertableList);
 		}
-		System.out.println("Finish Loading Oracle2MySqlSchemaMappingInfo!!!");
 	}
 	
 	/**

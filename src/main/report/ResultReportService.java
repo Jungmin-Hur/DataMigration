@@ -3,7 +3,7 @@ package main.report;
 import java.io.FileWriter;
 import java.io.IOException;
 
-import main.common.model.MigrationProgressType;
+import main.analysis.model.Constants;
 
 /**
  * analysis
@@ -16,16 +16,24 @@ import main.common.model.MigrationProgressType;
  *
  */
 public class ResultReportService {
+
 	String propertiesPath = "/main/resources/application.properties";
 	
-	public void writeReport(MigrationProgressType migrationProgressType, String message) {
-		FileWriter output = ReportAnalysisConnection.getFileWriter();
+	public static void writeAnalysisReport(String message) {
+		FileWriter output = null;
+		output = ReportAnalysisFileConnection.getFileWriter();
 		try {
 			System.out.println(message);
 			output.write(message + "\r\n");
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}
+	}
+	
+	public static void writeAnalysisReport(String message, boolean enter) {
+		writeAnalysisReport(message);
+		if(enter == true) {
+			writeAnalysisReport(Constants.EMPTY);
 		}
 	}
 }

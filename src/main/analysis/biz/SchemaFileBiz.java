@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 import main.analysis.model.Constants;
+import main.report.ResultReportService;
 
 public class SchemaFileBiz {
 	/**
@@ -15,16 +16,15 @@ public class SchemaFileBiz {
 	 * @return
 	 */
 	public boolean isValidFileExtensions(String filename) {
-		System.out.println("Start Checking File Extension. Filename : " + filename);
+		ResultReportService.writeAnalysisReport("정상 파일 체크 시작. 파일명 : " + filename);
 		
 		boolean isValidFile = isValidFileExtension(filename.toUpperCase());
+		
 		if(!isValidFile) {
-			System.out.println("Not supported File extension (Only .txt is allowed) ");
-			System.out.println("Inputted filename : " + filename);
-			
-		}else {
-			System.out.println("Finish Checking File Extension. : Vaild File Extension!!");
+			ResultReportService.writeAnalysisReport("지원하지 않는 확장자입니다. (.txt만 허용)");
 		}
+		
+		ResultReportService.writeAnalysisReport("정상 파일 체크 종료!!");
 		
 		return isValidFile;
 	}
@@ -45,8 +45,8 @@ public class SchemaFileBiz {
 	 * @return
 	 */
 	public boolean isValidFileContent(String filename) {
-		System.out.println("Start Checking File Contents. Filename : " + filename);
-		
+		ResultReportService.writeAnalysisReport("파일 content 체크 시작");
+
 		boolean isValidFileContent = true;
 		int lineNum=1;
 		int invalidCount=0;
@@ -59,7 +59,7 @@ public class SchemaFileBiz {
 				if(!line.startsWith(Constants.SHARP)) { // #로 시작하는 경우 읽지 않음(주석처리) 
 					String str[] = line.split(Constants.DELIMINATOR);
 					if(!isValidColumnNumPerRow(str)) {
-						System.out.println(lineNum + "번째 열 : Column 수가 잘못 되었습니다."); //잘못된 모든 row를 찍기 위해서 멈추지 않음
+						ResultReportService.writeAnalysisReport(lineNum + "번째 열 : 입력컬럼수가 잘못되었습니다. (12개여야 함)");
 						isValidFileContent = false;
 						invalidCount++;
 					}
@@ -75,10 +75,9 @@ public class SchemaFileBiz {
 		}
 		
 		if(!isValidFileContent) {
-			System.out.println(invalidCount + "Row(s) is(are) invalid. ");
-			
+			ResultReportService.writeAnalysisReport("파일 content가 잘못된 row수 : " + invalidCount);
 		}else {
-			System.out.println("Finish Checking File Contents. : Vaild File Contents !!");
+			ResultReportService.writeAnalysisReport("파일 content 체크 완료!!");
 		}
 
 		return isValidFileContent;

@@ -12,7 +12,7 @@ public class TargetInfo {
 	private String validationQuery;
 	private String mappingDefinition;
 	private String mappingLimitation;
-	private String mappingQuery; //TODO reserved. when mappingdefinition and mappinglimitation input, this value will be set.
+	private String mappingQuery; //TODO reserved. when mapping definition and mapping limitation input, this value will be set.
 	private Date createdDate;
 	private Date updatedDate;
 	

@@ -8,4 +8,5 @@ public class Constants {
 	public static final String SHARP = "#";
 	public static final String DOT_TXT = ".TXT";
 	public static final int SCHEMA_FILE_COLUMN_NUM_PER_ROW = 12;
+	public static final String EMPTY = "";
 }

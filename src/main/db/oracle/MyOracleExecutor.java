@@ -5,7 +5,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import main.common.exception.DataMigrationExceptionCode;
+import main.report.ResultReportService;
 
 public class MyOracleExecutor {
 
@@ -14,7 +14,7 @@ public class MyOracleExecutor {
 		
 		//SELECT만 허용
 		if(!query.toUpperCase().startsWith("SELECT")) {
-			System.out.println(DataMigrationExceptionCode.get("ANALYSIS_INVALID_QUERY_TYPE"));
+			ResultReportService.writeAnalysisReport("select query 만 실행할 수 있습니다.");
 			return null;
 		}
 

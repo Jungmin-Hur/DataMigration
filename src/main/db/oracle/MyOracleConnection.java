@@ -7,6 +7,8 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
 
+import main.report.ResultReportService;
+
 public class MyOracleConnection {
 
 //	private static String SERVER = "localhost";
@@ -40,7 +42,7 @@ public class MyOracleConnection {
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
-			System.out.println("Properties파일 읽기에 실패하였습니다.");
+			ResultReportService.writeAnalysisReport(propertiesPath + " 파일 읽기에 실패하였습니다.");
 			e.printStackTrace();
 		}
 		

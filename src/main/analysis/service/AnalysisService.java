@@ -17,10 +17,14 @@ import main.analysis.biz.ValidationSchemaBiz;
 import main.analysis.model.Constants;
 import main.analysis.model.SourceInfo;
 import main.db.oracle.MyOracleExecutor;
+import main.report.ResultReportService;
 
 public class AnalysisService implements IAnalysisService {
 
 	public List<SourceInfo> loadSchemaInfoFromFile(String filename) {
+		
+		ResultReportService.writeAnalysisReport("파일에서 Model로 변환 시작");
+		
 		SchemaFileBiz schemaFileBiz = new SchemaFileBiz();
 
 		boolean isVaildFileExtensions = schemaFileBiz.isValidFileExtensions(filename);
@@ -32,13 +36,20 @@ public class AnalysisService implements IAnalysisService {
 		if(!isValidFileContent) {
 			return null;
 		}
-
-		return loadSchemaInfo(filename);
+		
+		List<SourceInfo> sourceInfoList = loadSchemaInfo(filename);
+		if(sourceInfoList == null) {
+			ResultReportService.writeAnalysisReport("파일에서 Model로 변환 중지!! - 대상이 없거나 오류가 존재함", true);
+		} else {
+			ResultReportService.writeAnalysisReport("파일에서 Model로 변환 종료!!", true);
+		}
+		
+		return sourceInfoList;
 	}
 
 	private List<SourceInfo> loadSchemaInfo(String filename) {
-		System.out.println("Start Loading SchemaInfo From File!!");
-
+		ResultReportService.writeAnalysisReport("파일에서 Model로 loading 시작");
+		
 		List<SourceInfo> sourceInfoList = new ArrayList<>();
 		Map<String, SourceInfo> sourceInfoMap = new HashMap<>(); //This valiable for checking the duplicated input
 
@@ -59,6 +70,8 @@ public class AnalysisService implements IAnalysisService {
 					String mapKey = convertSchemaBiz.makeMapKey(sourceInfo);
 					isDuplicatedSchemaInfo = convertSchemaBiz.isDuplicatedSchemaInfo(sourceInfoMap, mapKey);
 					if(isDuplicatedSchemaInfo) {
+						ResultReportService.writeAnalysisReport("중복된 입력값이 존재합니다. mapKey : " + mapKey);
+						
 						break;
 					} else {
 						sourceInfoList.add(sourceInfo);
@@ -70,22 +83,25 @@ public class AnalysisService implements IAnalysisService {
 			br.close();
 
 		} catch (FileNotFoundException e) {
+			ResultReportService.writeAnalysisReport("FileNotFoundException 발생!!");
 			e.printStackTrace();
 		} catch (IOException e) {
+			ResultReportService.writeAnalysisReport("IOException 발생!!");
 			e.printStackTrace();
 		}
 		
 		if(isDuplicatedSchemaInfo) {
-			System.out.println("Exist Duplicated Input(s). Loading SchemaInfo From File is failed.");
 			return null;
 		} else {
-			System.out.println("Finish Loading SchemaInfo From File!! " + sourceInfoMap.size() + " items are loaded.");
+			ResultReportService.writeAnalysisReport("파일에서 Model로 loading 종료!! 총 item수 : " + sourceInfoMap.size());
 		}
 
 		return sourceInfoList;
 	}
 	
 	public boolean isCompatibilityColumnType(List<SourceInfo> sourceInfoList) {
+		ResultReportService.writeAnalysisReport("컬럼 Type 호환성 체크 시작");
+		
 		ValidationSchemaBiz validationSchemaBiz = new ValidationSchemaBiz();
 		
 		boolean result = true;
@@ -99,14 +115,23 @@ public class AnalysisService implements IAnalysisService {
 
 			boolean available = validationSchemaBiz.checkColumnType(sourceInfo.getColumnType(), sourceInfo.getTargetInfo().getColumnType());
 			if(!available) {
-				System.out.println("[Error] it doesnot support column type.(" + sourceInfo.getColumnType() + "/" + sourceInfo.getTargetInfo().getColumnType() +")"); //TODO Need more logging
+				ResultReportService.writeAnalysisReport("지원되지 않는 컬럼 Type 존재, 오류가 아닐 수도 있으니 수작업 검토 필요 (" + sourceInfo.getColumnType() + "/" + sourceInfo.getTargetInfo().getColumnType() +")");
 				result = false;
 			}
 		}
+		
+		if(result) {
+			ResultReportService.writeAnalysisReport("컬럼 Type 호환성 체크 종료!! - 이상없음", true);
+		} else {
+			ResultReportService.writeAnalysisReport("컬럼 Type 호환성 체크 종료!! - 추가 확인 데이터 존재함", true);
+		}
+		
 		return result; //전체 결과
 	}
 	
 	public boolean isCompatibilityColumnSize(List<SourceInfo> sourceInfoList) {
+		ResultReportService.writeAnalysisReport("컬럼 사이즈 호환 체크 시작");
+		
 		ValidationSchemaBiz validationSchemaBiz = new ValidationSchemaBiz();
 		
 		boolean result = true;
@@ -118,21 +143,26 @@ public class AnalysisService implements IAnalysisService {
 				continue;
 			}
 
-			//TODO 0,0 타입도 확인이 필요함
 			boolean available = validationSchemaBiz.checkColumnSize(sourceInfo.getColumnSize(), sourceInfo.getTargetInfo().getColumnSize());
 			if(!available) {
-				System.out.println("[Warning] Target Column Size보다 Source Column Size보다 큽니다. " + sourceInfo.getColumnSize() + "/" + sourceInfo.getTargetInfo().getColumnSize() +")");
+				ResultReportService.writeAnalysisReport("Target Column Size보다 Source Column Size보다 큼. 수작업 확인 필요 " + sourceInfo.getColumnSize() + "/" + sourceInfo.getTargetInfo().getColumnSize() +")");
 				result = false;
 			}
 		}
-		return result; //전체 결과
+
+		if(result) {
+			ResultReportService.writeAnalysisReport("컬럼 사이즈 호환 체크 종료!! - 이상없음", true);
+		} else {
+			ResultReportService.writeAnalysisReport("컬럼 사이즈 호환 체크 종료!! - 추가 확인 데이터 존재함", true);
+		}
+		
+		return result;
 	}
 	
 	public boolean findCleansingData(List<SourceInfo> sourceInfoList){
-		System.out.println("Start Find Cleansing Data in Source !! ----------");
+		ResultReportService.writeAnalysisReport("Source에서 클랜징 대상 데이터 존재여부 체크 시작");
 		
 		String localResult = "";
-		int invalidCount = 0;
 		boolean isExistCleansingData = true;
 		for(SourceInfo sourceInfo :  sourceInfoList) {
 			
@@ -141,26 +171,22 @@ public class AnalysisService implements IAnalysisService {
 				try {
 					localResult = MyOracleExecutor.selectOneQueryExecutor(query);
 					if(!localResult.equals("1")) {
-						System.out.println("[Error] Invalid Definition data. Query : " + query );
+						ResultReportService.writeAnalysisReport("클랜징 대상 쿼리 발견 : " + query);
 						isExistCleansingData = false;
-						invalidCount++;
 					}
 				} catch (SQLException e) {
+					ResultReportService.writeAnalysisReport("클랜징 대상 쿼리 발견 중 query 오류 " + query);
 					e.printStackTrace();
 				}				
 			}
 		}
 		
 		if(isExistCleansingData) {
-			System.out.println("Finish Find Cleansing Data in Source !! There is no cleansing data.----------");
+			ResultReportService.writeAnalysisReport("Source에서 클랜징 대상 데이터 존재여부 체크 종료!! - 이상없음", true);
 		} else {
-			System.out.println("Finish Find Cleansing Data in Source : " + invalidCount + " invalid data.----------");
+			ResultReportService.writeAnalysisReport("Source에서 클랜징 대상 데이터 존재여부 체크 종료!! - 추가 확인 데이터 존재함", true);
 		}
 		
 		return isExistCleansingData;
-	}
-	
-	public boolean anaysisReport(){
-		return true;
 	}
 }

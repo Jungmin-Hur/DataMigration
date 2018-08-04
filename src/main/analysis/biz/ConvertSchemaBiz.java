@@ -6,6 +6,7 @@ import main.analysis.model.Constants;
 import main.analysis.model.SourceInfo;
 import main.analysis.model.TargetInfo;
 import main.common.utils.CommonUtil;
+import main.report.ResultReportService;
 
 public class ConvertSchemaBiz {
 
@@ -15,9 +16,9 @@ public class ConvertSchemaBiz {
 		if(sourceInfoMap.get(mapKey) != null) {
 			String str[] = mapKey.split("\\" + Constants.POINT);
 			if(str.length == 4) {
-				System.out.println("Exist Duplicated Schema Info Input. Source (" + str[0] + "/" + str[1] + ") Target (" + str[2] + "/" + str[3] + ")");
+				ResultReportService.writeAnalysisReport("중복 입력된 Input 존재. Source (" + str[0] + "/" + str[1] + ") Target (" + str[2] + "/" + str[3] + ")");
 			} else {
-				System.out.println("Exist Duplicated Schema Info Input.");
+				ResultReportService.writeAnalysisReport("중복 입력된 Input 존재");
 			}
 			isDuplicatedSchemaInfo = true;
 		}
@@ -67,12 +68,12 @@ public class ConvertSchemaBiz {
 		
 		if(!Constants.NOT_APPLICABLE.equals(sourceInfo.getColumnSize()) && 
 				!CommonUtil.isStringNumber(sourceInfo.getColumnSize())) {
-			System.out.println("입력된 ColumnSize데이터에 숫자가 아닌 데이터가 존재합니다.");
+			ResultReportService.writeAnalysisReport("입력된 ColumnSize 데이터에 숫자가 아닌 데이터가 존재합니다.");
 			result = false;
 		} 
 		if(!Constants.NOT_APPLICABLE.equals(sourceInfo.getTargetInfo().getColumnSize()) && 
 				!CommonUtil.isStringNumber(sourceInfo.getTargetInfo().getColumnSize())) {
-			System.out.println("입력된 ColumnSize데이터에 숫자가 아닌 데이터가 존재합니다.");
+			ResultReportService.writeAnalysisReport("입력된 ColumnSize 데이터에 숫자가 아닌 데이터가 존재합니다.");
 			result = false;
 		} 
 		return result;
