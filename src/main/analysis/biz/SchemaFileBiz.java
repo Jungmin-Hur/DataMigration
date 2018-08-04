@@ -22,9 +22,9 @@ public class SchemaFileBiz {
 		
 		if(!isValidFile) {
 			ResultReportService.writeAnalysisReport("지원하지 않는 확장자입니다. (.txt만 허용)");
+		} else {
+			ResultReportService.writeAnalysisReport("정상 파일 체크 종료!! - 이상없음");			
 		}
-		
-		ResultReportService.writeAnalysisReport("정상 파일 체크 종료!!");
 		
 		return isValidFile;
 	}
@@ -77,7 +77,7 @@ public class SchemaFileBiz {
 		if(!isValidFileContent) {
 			ResultReportService.writeAnalysisReport("파일 content가 잘못된 row수 : " + invalidCount);
 		}else {
-			ResultReportService.writeAnalysisReport("파일 content 체크 완료!!");
+			ResultReportService.writeAnalysisReport("파일 content 체크 완료!! - 이상없음");
 		}
 
 		return isValidFileContent;

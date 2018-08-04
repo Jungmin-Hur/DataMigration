@@ -93,7 +93,7 @@ public class AnalysisService implements IAnalysisService {
 		if(isDuplicatedSchemaInfo) {
 			return null;
 		} else {
-			ResultReportService.writeAnalysisReport("파일에서 Model로 loading 종료!! 총 item수 : " + sourceInfoMap.size());
+			ResultReportService.writeAnalysisReport("파일에서 Model로 loading 종료!! 총 " + sourceInfoMap.size() + "개");
 		}
 
 		return sourceInfoList;
