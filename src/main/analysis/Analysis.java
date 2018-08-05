@@ -1,5 +1,8 @@
 package main.analysis;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import main.analysis.model.SourceInfo;
@@ -18,6 +21,9 @@ public class Analysis {
 		setup();
 //		test();
 		ResultReportService.writeAnalysisReport("Analysis 시작 ------------------");
+		long start = System.currentTimeMillis();
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+		ResultReportService.writeAnalysisReport("시작시간 : " + sdf.format(new Date()));
 		
 		AnalysisService analysis = new AnalysisService();
 		
@@ -41,7 +47,11 @@ public class Analysis {
 		if(!isConvertableColumnType || !isConvaertableColumnSize || !validationResult) {
 			ResultReportService.writeAnalysisReport("Analysis 분석결과 문제가 있는 데이터가 존재합니다. Report상에서 문제 부분 확인하여 필요시 조치하세요.");
 		}
-			
+
+		Date endDate = new Date();
+		ResultReportService.writeAnalysisReport("종료시간 : " + sdf.format(new Date()));
+		long end = System.currentTimeMillis();
+		System.out.println("걸리시간(ms) : " + (end-start));
 		ResultReportService.writeAnalysisReport("Analysis 종료 !!! --------------");
 
 		finalizeConnections();

@@ -13,6 +13,8 @@ public class ReportAnalysisFileConnection {
 	private static FileWriter fileWriter;
 	
 	String propertiesPath = "/main/resources/application.properties";
+	
+	//TODO Convert singleton pattern
 
 //	private static ReportAnalysisConnection reportAnalysisConnection = new ReportAnalysisConnection();
 
