@@ -11,7 +11,24 @@ public class PreMigration {
 	public static void main(String[] args) {
 		
 		setup();
-		dbConnectiontest();
+		
+		dbConnectionTest();
+		
+		//TODO Bridge Table 생성 (SourceSchemaInfo로 생성)
+		
+		//TODO Source Table -> Bridge Table로 데이터 이관
+		
+		//TODO Target Table Schema체크
+		// Analysis에서 입력받은 TargetSchemaInfo가 실제 Target Table에 모두 존재하는지, Column Type이 동일한지 체크
+		// 사용자 누락으로 입력하지 않은 Target Schema정보가 존재하는지 체크
+		
+		//TODO Target Table의 PK정보로 Bridge Table 조회시 중복 데이터 존재하는지 확인
+		//TODO Target Table의 FK정보로 Bridge Table 내 Reference 데이터가 모두 존재하는지 확인
+		//TODO Target Table의 nullable정보로 Bridge Table 데이터 확인
+
+		
+//		System.out.println(MyMySQLConnection.getHost());
+
 //		ResultReportService.writeAnalysisReport("Analysis 시작 ------------------");
 //		
 //		AnalysisService analysis = new AnalysisService();
@@ -56,7 +73,7 @@ public class PreMigration {
 //		ReportAnalysisFileConnection.closeFileStream();
 	}
 	
-	public static void dbConnectiontest() {
+	public static void dbConnectionTest() {
 		//oracle connection test
 		if(MyOracleConnection.getConnection() == null) {
 			System.out.println("not connected");
