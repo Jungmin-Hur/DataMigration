@@ -51,7 +51,7 @@ public class Analysis {
 		Date endDate = new Date();
 		ResultReportService.writeAnalysisReport("종료시간 : " + sdf.format(new Date()));
 		long end = System.currentTimeMillis();
-		System.out.println("걸리시간(ms) : " + (end-start));
+		ResultReportService.writeAnalysisReport("걸린시간: " + (end-start) + "ms");
 		ResultReportService.writeAnalysisReport("Analysis 종료 !!! --------------");
 
 		finalizeConnections();
