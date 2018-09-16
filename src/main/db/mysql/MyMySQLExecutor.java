@@ -32,4 +32,24 @@ public class MyMySQLExecutor {
 		}
 		return result;
 	}
+	
+	public static String selectTableInfo(String tableName)  throws SQLException {
+		Connection conn = MyMySQLConnection.getConnection();
+		
+		Statement stmt = null;
+		String result = "";
+		String query = "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = " + tableName;
+
+		try {
+			stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery(query);
+			rs.next();
+			result = rs.getString(1);
+		} finally {
+			if (stmt != null) {
+				stmt.close();
+			}
+		}
+		return result;
+	}
 }

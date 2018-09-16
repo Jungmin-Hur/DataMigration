@@ -8,6 +8,7 @@ import main.common.mysql.MySqlBridgeTableSchemaMappingInfo;
 import main.common.oracel2mysql.Oracle2MySqlSchemaMappingInfo;
 import main.db.mysql.MyMySQLConnection;
 import main.db.oracle.MyOracleConnection;
+import main.premigration.service.PreMigrationService;
 import main.report.ReportAnalysisFileConnection;
 
 public class PreMigration {
@@ -21,10 +22,14 @@ public class PreMigration {
 		dbConnectionTest();
 		loadDataTest();
 		
+		PreMigrationService preMigrationService = new PreMigrationService();
+		
 		//TODO Bridge Table 생성 (SourceSchemaInfo로 생성)
 		//sourceInfoList로 Schema Mapping 정보 Load - 한 item당 한개의 Mapping 정보
-		AnalysisService analysis = new AnalysisService();
-		List<SourceInfo> sourceInfoList = analysis.loadSchemaInfoFromFile(SCHEMAINFO_FILE_NAME);
+		AnalysisService analysisService = new AnalysisService();
+		List<SourceInfo> sourceInfoList = analysisService.loadSchemaInfoFromFile(SCHEMAINFO_FILE_NAME);
+		
+		preMigrationService.migrationToBridgeTable(sourceInfoList);
 		
 		//TODO Source Table -> Bridge Table로 데이터 이관
 		//TODO Target Table Schema체크
