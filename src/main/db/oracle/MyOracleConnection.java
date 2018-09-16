@@ -24,7 +24,6 @@ public class MyOracleConnection {
 	
 	String propertiesPath = "/main/resources/db.properties";
 
-
 	public MyOracleConnection() {
 		try {
 			Class.forName("oracle.jdbc.driver.OracleDriver");

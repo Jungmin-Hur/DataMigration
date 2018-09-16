@@ -1,6 +1,5 @@
 package main.analysis;
 
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -19,7 +18,8 @@ public class Analysis {
 	public static void main(String[] args) {
 		
 		setup();
-//		test();
+		dbConnectionTest();
+		
 		ResultReportService.writeAnalysisReport("Analysis 시작 ------------------");
 		long start = System.currentTimeMillis();
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
@@ -68,13 +68,16 @@ public class Analysis {
 		ReportAnalysisFileConnection.closeFileStream();
 	}
 	
-	public static void test() {
+	public static void dbConnectionTest() {
 		//oracle connection test
 		if(MyOracleConnection.getConnection() == null) {
-			System.out.println("not connected");
+			System.out.println("Oracle connection was not created.");
 		} else {
-			System.out.println("connected");
+			System.out.println("Oracle connection was created successfully.");
 		}
+		
+		System.out.println("");
+
 //		ResultReportService resultReportService1 = new ResultReportService();
 //		ResultReportService resultReportService2 = new ResultReportService();
 //		ResultReportService resultReportService3 = new ResultReportService();

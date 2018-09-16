@@ -47,7 +47,7 @@ public class MyMySQLConnection {
 			//mysql에 default_time_zone 를 세팅해주어도 됨. (ex. default_time_zone='+03:00')
 			//CLIENT_PLUGIN_AUTH is required : SSL 미사용 에러가 날 경우, mysql-connector-java 버전을 낮추거나 mysql 버전 업그레이드 진행 필요
 			String url = "jdbc:mysql://"+host+":"+port+"/"+database+"?autoReconnect=true&useSSL=false&serverTimezone=UTC";
-			System.out.println(url);
+//			System.out.println(url);
 			connection = DriverManager.getConnection(url, user, pwd);
 			
 		} catch (SQLException e) {

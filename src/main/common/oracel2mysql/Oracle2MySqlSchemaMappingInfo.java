@@ -22,7 +22,6 @@ public class Oracle2MySqlSchemaMappingInfo {
 				,{"BIGINT2", "INT", "INTEAGER"}
 				,{"BIGINT3", "INT", "INTEAGER"}
 				,{"BIGINT4", "INT", "INTEAGER"}
-				
 				,{"DATE", "DATE"}
 		};
 	
