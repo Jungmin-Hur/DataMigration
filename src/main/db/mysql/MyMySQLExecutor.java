@@ -33,6 +33,28 @@ public class MyMySQLExecutor {
 		return result;
 	}
 	
+	public static void queryExecuter(String query) {
+		Connection conn = MyMySQLConnection.getConnection();
+		
+		Statement stmt = null;
+		try {
+			stmt = conn.createStatement();
+			stmt.executeQuery(query);
+		} catch(SQLException e1){
+			System.out.println(e1.getMessage());
+		} catch(Exception e2) {
+			System.out.println(e2.getMessage());
+		} finally {
+			if (stmt != null) {
+				try {
+					stmt.close();
+				} catch (SQLException e) {
+					System.out.println(e.getMessage());
+				}
+			}
+		}
+	}
+	
 	public static String selectTableInfo(String tableName)  throws SQLException {
 		Connection conn = MyMySQLConnection.getConnection();
 		
@@ -45,6 +67,27 @@ public class MyMySQLExecutor {
 			ResultSet rs = stmt.executeQuery(query);
 			rs.next();
 			result = rs.getString(1);
+		} finally {
+			if (stmt != null) {
+				stmt.close();
+			}
+		}
+		return result;
+	}
+
+	public static String backupTable(String tableName)  throws SQLException {
+		Connection conn = MyMySQLConnection.getConnection();
+		
+		Statement stmt = null;
+		String result = "";
+		String createTableQuery = "CREATE TABLE TEST1 AS SELECT * FROM " + tableName;
+		String deleteTableQuery = "DELETE TABLE " + tableName;
+
+		try {
+			stmt = conn.createStatement();
+			stmt.executeQuery(createTableQuery);
+			stmt.executeQuery(deleteTableQuery);
+			
 		} finally {
 			if (stmt != null) {
 				stmt.close();

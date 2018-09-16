@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 
 import main.analysis.model.SourceInfo;
-import main.analysis.model.TargetInfo;
 import main.common.mysql.MySqlBridgeTableSchemaMappingInfo;
 import main.db.mysql.MyMySQLExecutor;
 
@@ -16,64 +15,67 @@ public class PreMigrationService implements IPreMigrationService {
 
 	@Override
 	public void migrationToBridgeTable(List<SourceInfo> sourceInfoList) {
-		//targetInfoList에 loading
-		List<TargetInfo> targetInfoList = makeTargetInfoList(sourceInfoList);
-		createBridgeTableSchema(targetInfoList);
+		List<String> tableNameList = getSourceTableList(sourceInfoList);
 		
-		//기존에 작업하던 테이블은 자동으로 backup하고 삭제함
-		//CREATE TABLE TEST1 AS SELECT * FROM TEST (백업)
-		//DELETE TABLE TEST (삭제)
-		//
-	}
-	
-	private List<TargetInfo> makeTargetInfoList(List<SourceInfo> sourceInfoList){
-		List<TargetInfo> targetInfoList = new ArrayList<TargetInfo>();
-		Map<String, String> infoMap = new HashMap<>();
-		for(SourceInfo sourceInfo : sourceInfoList) {
-			String mapKey = sourceInfo.getTableName().concat("|").concat(sourceInfo.getColumnName());
+		//bridge table이 이미 존재하면, 기존 bridge table을 backup하고 삭제
+		backupTable(tableNameList, sourceInfoList);
 
-			if(infoMap.get(mapKey) == null) {
-				TargetInfo targetInfo = new TargetInfo();
-				targetInfo.setTableName(sourceInfo.getTableName());
-				targetInfo.setColumnName(sourceInfo.getColumnName());
-				targetInfo.setColumnType(MySqlBridgeTableSchemaMappingInfo.extractType(sourceInfo.getColumnType()));
-				targetInfoList.add(targetInfo);
-				
-				infoMap.put(mapKey, "1");
+		createBridgeTableSchema(tableNameList, sourceInfoList);
+		
+		//bridge table에 데이터 이동
+	}
+
+	private void backupTable(List<String> tableNameList, List<SourceInfo> sourceInfoList) {
+		for(String tableName : tableNameList) {
+			String result = "";
+			try {
+				result = MyMySQLExecutor.selectTableInfo(tableName);
+			} catch (SQLException e) {
+				System.out.println(e.getMessage());
+			}
+
+			if(result != null && !result.isEmpty()) {
+				try {
+					MyMySQLExecutor.backupTable(tableName);
+				} catch (SQLException e) {
+					System.out.println(e.getMessage());
+				}
 			}
 		}
-
-		return targetInfoList;
-	}
-
-	@Override
-	public void createBridgeTableSchema(List<TargetInfo> targetInfo) {
-		//TODO 동일 테이블명이 존재하는지 확인
-		try {
-			isAreadyExistTable(targetInfo);
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 	}
 	
-	private boolean isAreadyExistTable(List<TargetInfo> targetInfoList) throws SQLException {
+	private List<String> getSourceTableList(List<SourceInfo> sourceInfoList){
 		Map<String, String> tableMap = new HashMap<>();
-		String result;
-
-		for(TargetInfo targetInfo : targetInfoList) {
-			tableMap.put(targetInfo.getTableName(), "1");
+		for(SourceInfo sourceInfo : sourceInfoList) {
+			tableMap.put(sourceInfo.getTableName(), "1");
 		}
+		
+		List<String> tableNameList = new ArrayList<>();
 		Iterator<String> keys = tableMap.keySet().iterator();
 		while(keys.hasNext()) {
-			String tableName = keys.next();
-			result = MyMySQLExecutor.selectTableInfo(tableName);
-			if(result != null && !result.isEmpty()) {
-				System.out.println("bridgeTable 이 존재합니다. 기존 Bridge Table을 백업한 후 삭제한 후 다시 진행하세요. 테이블명 : " + result);
-				return false;
-			}
+			tableNameList.add(keys.next());
 		}
-
-		return true;
+		return tableNameList;
 	}
+	
+	private void createBridgeTableSchema(List<String> tableNameList, List<SourceInfo> sourceInfoList) {
+		for(String tableName : tableNameList) {
+			StringBuffer schemaQuery = new StringBuffer();
+			schemaQuery.append("CREATE TABLE " + tableName + "(");
+			int index = 0;
+			for(SourceInfo sourceInfo : sourceInfoList) {
+				if(index > 0) {
+					schemaQuery.append(",");
+				}
+				if(tableName.equals(sourceInfo.getTableName())) {
+					schemaQuery.append(sourceInfo.getColumnName() + " " + MySqlBridgeTableSchemaMappingInfo.getRepresentativeColumnType(sourceInfo.getColumnType()));
+				}
+				index ++;
+			}
+			schemaQuery.append(")");
+			
+			MyMySQLExecutor.queryExecuter(schemaQuery.toString());
+		}
+	}
+
 }
