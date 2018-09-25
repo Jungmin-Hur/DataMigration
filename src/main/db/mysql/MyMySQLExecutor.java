@@ -41,15 +41,15 @@ public class MyMySQLExecutor {
 			stmt = conn.createStatement();
 			stmt.executeUpdate(query);
 		} catch(SQLException e1){
-			System.out.println(e1.getMessage());
+			e1.printStackTrace();
 		} catch(Exception e2) {
-			System.out.println(e2.getMessage());
+			e2.printStackTrace();
 		} finally {
 			if (stmt != null) {
 				try {
 					stmt.close();
 				} catch (SQLException e) {
-					System.out.println(e.getMessage());
+					e.printStackTrace();
 				}
 			}
 		}
@@ -69,11 +69,11 @@ public class MyMySQLExecutor {
 			rs.next();
 			result = rs.getString(1);
 		} finally {
-			if (stmt != null) {
-				stmt.close();
-			}
 			if(rs != null) {
 				rs.close();
+			}
+			if (stmt != null) {
+				stmt.close();
 			}
 		}
 		return result;

@@ -47,10 +47,17 @@ public class PreMigrationService implements IPreMigrationService {
 					}
 				}
 			}
+//			try {
+//				System.out.println("1AAAA");
+////				System.out.println(MyOracleExecutor.selectOneQueryExecutor("SELECT LOT_INFO_ID FROM LOT_INFO WHERE LOT_INFO_ID = '1168010100106210018023369'" )); //TODO 삭제
+//				System.out.println("BBB");
+//			} catch (SQLException e) {
+//				e.printStackTrace();
+//			}
 			MyOracleExecutor.moveDataOracle2MySQL(tableName, columnNames);
 			
 			System.out.println("Bridge Table에 데이터 이동이 완료되었습니다. 테이블명 : " + tableName);
-			
+			break; //TODO 삭제
 		}
 
 	}
