@@ -39,7 +39,7 @@ public class MyMySQLExecutor {
 		Statement stmt = null;
 		try {
 			stmt = conn.createStatement();
-			stmt.executeQuery(query);
+			stmt.executeUpdate(query);
 		} catch(SQLException e1){
 			System.out.println(e1.getMessage());
 		} catch(Exception e2) {
@@ -59,17 +59,21 @@ public class MyMySQLExecutor {
 		Connection conn = MyMySQLConnection.getConnection();
 		
 		Statement stmt = null;
+		ResultSet rs = null;
 		String result = "";
-		String query = "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = " + tableName;
+		String query = "SELECT COUNT(TABLE_NAME) FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '" + tableName + "'";
 
 		try {
 			stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery(query);
+			rs = stmt.executeQuery(query);
 			rs.next();
 			result = rs.getString(1);
 		} finally {
 			if (stmt != null) {
 				stmt.close();
+			}
+			if(rs != null) {
+				rs.close();
 			}
 		}
 		return result;
@@ -80,14 +84,33 @@ public class MyMySQLExecutor {
 		
 		Statement stmt = null;
 		String result = "";
-		String createTableQuery = "CREATE TABLE TEST1 AS SELECT * FROM " + tableName;
-		String deleteTableQuery = "DELETE TABLE " + tableName;
+		String createTableQuery = "CREATE TABLE " + "BACK_" + tableName + " SELECT * FROM " + tableName;
 
 		try {
 			stmt = conn.createStatement();
-			stmt.executeQuery(createTableQuery);
-			stmt.executeQuery(deleteTableQuery);
-			
+			stmt.executeUpdate(createTableQuery);
+		} catch (SQLException e){
+			System.out.println(e.getMessage());
+		} finally {
+			if (stmt != null) {
+				stmt.close();
+			}
+		}
+		return result;
+	}
+
+	public static String dropTable(String tableName)  throws SQLException {
+		Connection conn = MyMySQLConnection.getConnection();
+		
+		Statement stmt = null;
+		String result = "";
+		String dropTableQuery = "DROP TABLE " + tableName;
+
+		try {
+			stmt = conn.createStatement();
+			stmt.executeUpdate(dropTableQuery);
+		} catch (SQLException e){
+			System.out.println(e.getMessage());
 		} finally {
 			if (stmt != null) {
 				stmt.close();

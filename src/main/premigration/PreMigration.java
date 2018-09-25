@@ -4,7 +4,7 @@ import java.util.List;
 
 import main.analysis.model.SourceInfo;
 import main.analysis.service.AnalysisService;
-import main.common.mysql.MySqlBridgeTableSchemaMappingInfo;
+import main.common.bridgetable.Oracle2MySqlBridgeTableSchemaMappingInfo;
 import main.common.oracel2mysql.Oracle2MySqlSchemaMappingInfo;
 import main.db.mysql.MyMySQLConnection;
 import main.db.oracle.MyOracleConnection;
@@ -24,17 +24,12 @@ public class PreMigration {
 		
 		PreMigrationService preMigrationService = new PreMigrationService();
 		
-		//TODO Bridge Table 생성 (SourceSchemaInfo로 생성)
+		//Bridge Table 생성, source db에서 bridge table로 데이터 이동 (SourceSchemaInfo로 생성)
 		//sourceInfoList로 Schema Mapping 정보 Load - 한 item당 한개의 Mapping 정보
 		AnalysisService analysisService = new AnalysisService();
 		List<SourceInfo> sourceInfoList = analysisService.loadSchemaInfoFromFile(SCHEMAINFO_FILE_NAME);
 		
 		preMigrationService.migrationToBridgeTable(sourceInfoList);
-		
-		//TODO Source Table -> Bridge Table로 데이터 이관
-		//TODO Target Table Schema체크
-		// Analysis에서 입력받은 TargetSchemaInfo가 실제 Target Table에 모두 존재하는지, Column Type이 동일한지 체크
-		// 사용자 누락으로 입력하지 않은 Target Schema정보가 존재하는지 체크
 		
 		//TODO Target Table의 PK정보로 Bridge Table 조회시 중복 데이터 존재하는지 확인
 		//TODO Target Table의 FK정보로 Bridge Table 내 Reference 데이터가 모두 존재하는지 확인
@@ -74,7 +69,7 @@ public class PreMigration {
 	
 	private static void setup() {
 		Oracle2MySqlSchemaMappingInfo loadSchema = new Oracle2MySqlSchemaMappingInfo(); //Load Schema Data
-		MySqlBridgeTableSchemaMappingInfo loadBridgeTableMapping = new MySqlBridgeTableSchemaMappingInfo(); //Load MySql Bridge table Mapping info
+		Oracle2MySqlBridgeTableSchemaMappingInfo loadBridgeTableMapping = new Oracle2MySqlBridgeTableSchemaMappingInfo(); //Load MySql Bridge table Mapping info
 		MyOracleConnection oracleConnection = new MyOracleConnection(); //Load Oracle Connection
 		MyMySQLConnection mysqlConnection = new MyMySQLConnection(); // Load MySQL Connection
 		ReportAnalysisFileConnection reportAnalysisConnection = new ReportAnalysisFileConnection();
@@ -103,8 +98,8 @@ public class PreMigration {
 	}
 	
 	private static void loadDataTest() {
-		MySqlBridgeTableSchemaMappingInfo.getRepresentativeColumnType("VARCHAR(10");
-		MySqlBridgeTableSchemaMappingInfo.getRepresentativeColumnType("LONGTEXT");
+		Oracle2MySqlBridgeTableSchemaMappingInfo.getRepresentativeColumnType("VARCHAR(10");
+		Oracle2MySqlBridgeTableSchemaMappingInfo.getRepresentativeColumnType("NUMBER");
 //		System.out.println(MySqlBridgeTableSchemaMappingInfo.getRepresentativeColumnType("LON1GTEXT")); // negativetest
 //		System.out.println(MySqlBridgeTableSchemaMappingInfo.getRepresentativeColumnType("")); // negativetest
 //		System.out.println(MySqlBridgeTableSchemaMappingInfo.getRepresentativeColumnType(new String())); // negativetest
