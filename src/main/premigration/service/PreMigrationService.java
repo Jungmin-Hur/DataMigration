@@ -61,12 +61,10 @@ public class PreMigrationService implements IPreMigrationService {
 	private void createBridgeTableSchema(List<String> tableNameList, List<SourceInfo> sourceInfoList) {
 		for(String tableName : tableNameList) {
 			StringBuffer schemaQuery = new StringBuffer();
-			schemaQuery.append("CREATE TABLE " + tableName + "(");
+			schemaQuery.append("CREATE TABLE " + tableName + "( MIGRATE_FILE VARCHAR(100) "); // Default 컬럼
 			int index = 0;
 			for(SourceInfo sourceInfo : sourceInfoList) {
-				if(index > 0) {
 					schemaQuery.append(",");
-				}
 				if(tableName.equals(sourceInfo.getTableName())) {
 					schemaQuery.append(sourceInfo.getColumnName() + " " + MySqlBridgeTableSchemaMappingInfo.getRepresentativeColumnType(sourceInfo.getColumnType()));
 				}
