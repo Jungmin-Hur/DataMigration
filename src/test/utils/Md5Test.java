@@ -1,7 +1,9 @@
 package test.utils;
 
 import java.math.BigInteger;
+
 import org.junit.Test;
+
 import main.common.utils.Md5;
 
 public class Md5Test {
@@ -16,13 +18,14 @@ public class Md5Test {
 		long start = System.currentTimeMillis();
 		for(int i=0;i<1000000;i++) {
 			String a = String.valueOf(i) + "abcdefghigklmnopqrstuvwxyz";
+			System.out.println(a);
 		}
 		long end = System.currentTimeMillis();
 		System.out.println("string test : " + (end-start));
 		
 		start = System.currentTimeMillis();
 		for(int i=0;i<1000000;i++) {
-			String a = Md5.getMd5(String.valueOf(i)+"abcdefghigklmnopqrstuvwxyz");
+			Md5.getMd5(String.valueOf(i)+"abcdefghigklmnopqrstuvwxyz");
 		}
 		end = System.currentTimeMillis();
 		System.out.println("md5 test : " + (end-start));

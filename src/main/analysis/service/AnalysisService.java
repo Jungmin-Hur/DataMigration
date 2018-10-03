@@ -5,7 +5,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -168,15 +167,10 @@ public class AnalysisService implements IAnalysisService {
 			
 			String query = sourceInfo.getValidationQuery();
 			if(!Constants.NOT_APPLICABLE.equals(query)) {
-				try {
-					localResult = MyOracleExecutor.selectOneQueryExecutor(query);
-					if(!localResult.equals("1")) {
-						ResultReportService.writeAnalysisReport("클랜징 대상 쿼리 발견 : " + query);
-						isExistCleansingData = false;
-					}
-				} catch (SQLException e) {
-					ResultReportService.writeAnalysisReport("클랜징 대상 쿼리 발견 중 query 오류 " + query);
-					e.printStackTrace();
+				localResult = MyOracleExecutor.selectOneQueryExecutor(query);
+				if(!localResult.equals("1")) {
+					ResultReportService.writeAnalysisReport("클랜징 대상 쿼리 발견 : " + query);
+					isExistCleansingData = false;
 				}				
 			}
 		}

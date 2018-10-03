@@ -6,11 +6,12 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 
+import main.db.mysql.MyMySQLConnection;
 import main.report.ResultReportService;
 
 public class MyOracleExecutor {
 
-	public static String selectOneQueryExecutor(String query) throws SQLException {
+	public static String selectOneQueryExecutor(String query) {
 		Connection conn = MyOracleConnection.getConnection();
 		ResultSet rs = null;
 		Statement stmt = null;
@@ -25,28 +26,158 @@ public class MyOracleExecutor {
 		try {
 			stmt = conn.createStatement();
 			rs = stmt.executeQuery(query);
-			rs.next();
-			result = rs.getString(1);
-		} finally {
+			if (rs.next()) {
+				result = rs.getString(1);
+			}
+		} catch(SQLException e){
+			e.printStackTrace();
+		} catch(Exception e){
+			e.printStackTrace();
+		} 
+		finally {
 			if (rs != null) {
-				rs.close();
+				try {
+					rs.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
 			}
 			if (stmt != null) {
-				stmt.close();
+				try {
+					stmt.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
 			}
 		}
+
+		return result;
+	}
+	
+	public static String selectTableName(String tableName) {
+		Connection conn = MyOracleConnection.getConnection();
+		ResultSet rs = null;
+		Statement stmt = null;
+		String result = "";
+		String query = "SELECT TABLE_NAME FROM TABS WHERE TABLE_NAME = '" + tableName + "'"; 
 		
+		try {
+			stmt = conn.createStatement();
+			rs = stmt.executeQuery(query);
+			if (rs.next()) {
+				result = rs.getString(1);
+			}
+		} catch(SQLException e){
+			e.printStackTrace();
+		} catch(Exception e){
+			e.printStackTrace();
+		} 
+		finally {
+			if (rs != null) {
+				try {
+					rs.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+			if (stmt != null) {
+				try {
+					stmt.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+
+		return result;
+	}
+	
+	
+	public static boolean queryExecuter(String query) {
+		Connection conn = MyOracleConnection.getConnection();
+
+		Statement stmt = null;
+		boolean result = false;
+		
+		try {
+			stmt = conn.createStatement();
+			stmt.executeQuery(query);
+			result = true;
+		} catch(SQLException e){
+			e.printStackTrace();
+		} catch(Exception e){
+			e.printStackTrace();
+		} finally {
+			if (stmt != null) {
+				try {
+					stmt.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+
+		return result;
+	}
+	
+	public static String backupTable(String tableName) {
+		Connection conn = MyOracleConnection.getConnection();
+		
+		Statement stmt = null;
+		String result = "";
+		String createTableQuery = "CREATE TABLE " + "B_" + tableName + " AS SELECT * FROM " + tableName;
+
+		try {
+			stmt = conn.createStatement();
+			stmt.executeUpdate(createTableQuery);
+		} catch (SQLException e){
+			System.out.println(e.getMessage());
+		} finally {
+			if (stmt != null) {
+				try {
+					stmt.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		return result;
+	}
+
+	public static String dropTable(String tableName) {
+		Connection conn = MyOracleConnection.getConnection();
+		
+		Statement stmt = null;
+		String result = "";
+		String dropTableQuery = "DROP TABLE " + tableName;
+
+		try {
+			stmt = conn.createStatement();
+			stmt.executeUpdate(dropTableQuery);
+		} catch (SQLException e){
+			System.out.println(e.getMessage());
+		} finally {
+			if (stmt != null) {
+				try {
+					stmt.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
 		return result;
 	}
 	
 	public static void moveDataOracle2MySQL(String tableName, List<String> columnNames) {
-		Connection conn = MyOracleConnection.getConnection();
+		Connection oracleConn = MyOracleConnection.getConnection();
+		Connection mysqlConn = MyMySQLConnection.getConnection();
 		
-//		if(!tableName.equals("LOT_INFO")) return;
-		
-		Statement stmt = null;
-//		Statement stmt1 = null;
+		Statement oracleStmt = null;
+		Statement mySqlStmt = null;
+		ResultSet oracleRs = null;
 
+		int insertedRow = 0;
+	
 		try {
 			StringBuffer selectQuery = new StringBuffer();
 			
@@ -60,91 +191,68 @@ public class MyOracleExecutor {
 				ii++;
 			}
 			selectQuery.append("FROM " + tableName);
-			stmt = conn.createStatement();
+			oracleStmt = oracleConn.createStatement();
+			oracleRs = oracleStmt.executeQuery(selectQuery.toString());
 			
-			ResultSet rs = stmt.executeQuery(selectQuery.toString());
-			
-			if(rs == null) {
-				System.out.println("널인디?");
-			}
-			else {
-				System.out.println("널은 아닌디");
-			}
-			if(rs.next() == false) {
-				System.out.println("다음이 널인디?");
+			while(oracleRs.next()) {
+				mySqlStmt = mysqlConn.createStatement();
+				
+				StringBuffer insertQuery = new StringBuffer();
+				insertQuery.append("INSERT INTO " + "BT_" + tableName + " ( MIGRATE_YN, ");
+				int index = 0;
+				for(String columnName: columnNames) {
+					if(index != 0) {
+						insertQuery.append(", ");
+					}
+					insertQuery.append(columnName);
+					index++;
+				}
+				insertQuery.append(") VALUES ( 'N', ");
+				for(int i = 0; i < index ; i++) {
+					if(i != 0) {
+						insertQuery.append(", ");
+					}
+					if(oracleRs.getString(i+1) == null) {
+						insertQuery.append(" " + null + "");	
+						
+					} else {
+						insertQuery.append(" '" + oracleRs.getString(i+1) + "'");	
+					}
+				}
+				insertQuery.append(")");
+				insertedRow = insertedRow + mySqlStmt.executeUpdate(insertQuery.toString());
+				
+				if(insertedRow % 1000 == 0) {
+					System.out.println("[진행중]" + tableName + "테이블에 " + insertedRow + "가 insert 되었습니다.");
+				}
 				
 			}
-			else {
-				System.out.println("널은 아닌디2");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			if (oracleRs != null) {
+				try {
+					oracleRs.close();
+				} catch (SQLException e) {
+					System.out.println(e.getStackTrace());
+				}
 			}
-
-			if(rs.getObject(0) == null) {
-				System.out.println("널인디1?");
+			if (oracleStmt != null) {
+				try {
+					oracleStmt.close();
+				} catch (SQLException e) {
+					System.out.println(e.getStackTrace());
+				}
 			}
-			else {
-				System.out.println("널은 아닌디3");
+			if (mySqlStmt != null) {
+				try {
+					mySqlStmt.close();
+				} catch (SQLException e) {
+					System.out.println(e.getStackTrace());
+				}
 			}
-
-			System.out.println(selectQuery);	
-			System.out.println("뭐지뭐지잉");
-			System.out.println(rs.getRow());
-			if(rs.next()) {
-				System.out.println(rs.getString(1));
-				System.out.println("뭐지뭐지");
-			}
-			
-			if(rs != null) {
-				rs.close();
-				
-			}
-			if(stmt != null) {
-				stmt.close();
-			}
-			
-//			
-//			while(rs.next()) {
-//				stmt1 = conn.createStatement();
-//				
-//				StringBuffer insertQuery = new StringBuffer();
-//				insertQuery.append("INSERT INTO " + "BT_" + tableName + " (");
-//				int index = 0;
-//				for(String columnName: columnNames) {
-//					if(index != 0) {
-//						insertQuery.append(", ");
-//					}
-//					insertQuery.append(columnName);
-//					index++;
-//				}
-//				insertQuery.append(") VALUES (");
-//				for(int i = 0; i < index ; i++) {
-//					if(i != 0) {
-//						insertQuery.append(", ");
-//					}
-//					insertQuery.append(" '" + rs.getString(i) + "'");
-//				}
-//				ResultSet rs1 = stmt1.executeQuery(insertQuery.toString());
-//				
-//			}
-//		} catch (SQLException e) {
-//			System.out.println(e.getMessage());
-//		} finally {
-//			if (pstmt != null) {
-//				try {
-//					pstmt.close();
-//				} catch (SQLException e) {
-//					System.out.println(e.getStackTrace());
-//				}
-//			}
-//			if (stmt1 != null) {
-//				try {
-//					stmt1.close();
-//				} catch (SQLException e) {
-//					System.out.println(e.getStackTrace());
-//				}
-//			}
-//		}
-		}catch(Exception e){
-			System.out.println(e.getMessage());
 		}
+		
+		System.out.println("[완료]" + tableName + "테이블에 " + insertedRow + "가 insert 되었습니다.");
 	}
 }

@@ -59,10 +59,4 @@ public class MyOracleConnection {
 	public static String getServer() {
 		return server;
 	}
-	
-	@Override
-	protected void finalize() throws Throwable {
-		connection.close();
-		super.finalize();
-	}
 }

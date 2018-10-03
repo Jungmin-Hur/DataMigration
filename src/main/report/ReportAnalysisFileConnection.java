@@ -63,7 +63,9 @@ public class ReportAnalysisFileConnection {
 	
 	public static void closeFileStream() {
 		try {
-			fileWriter.close();
+			if(fileWriter != null) {
+				fileWriter.close();
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

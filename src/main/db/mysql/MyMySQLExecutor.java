@@ -33,13 +33,16 @@ public class MyMySQLExecutor {
 		return result;
 	}
 	
-	public static void queryExecuter(String query) {
+	public static boolean queryExecuter(String query) {
 		Connection conn = MyMySQLConnection.getConnection();
 		
 		Statement stmt = null;
+		boolean result = false;
+		
 		try {
 			stmt = conn.createStatement();
 			stmt.executeUpdate(query);
+			result = true;
 		} catch(SQLException e1){
 			e1.printStackTrace();
 		} catch(Exception e2) {
@@ -53,33 +56,48 @@ public class MyMySQLExecutor {
 				}
 			}
 		}
+		return result;
 	}
 	
-	public static String selectTableInfo(String tableName)  throws SQLException {
+	public static String selectTableName(String tableName) {
 		Connection conn = MyMySQLConnection.getConnection();
-		
-		Statement stmt = null;
 		ResultSet rs = null;
+		Statement stmt = null;
 		String result = "";
-		String query = "SELECT COUNT(TABLE_NAME) FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '" + tableName + "'";
+		String query = "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '" + tableName + "'";
 
 		try {
 			stmt = conn.createStatement();
 			rs = stmt.executeQuery(query);
-			rs.next();
-			result = rs.getString(1);
-		} finally {
-			if(rs != null) {
-				rs.close();
+			if (rs.next()) {
+				result = rs.getString(1);
+			}
+		} catch(SQLException e){
+			e.printStackTrace();
+		} catch(Exception e){
+			e.printStackTrace();
+		} 
+		finally {
+			if (rs != null) {
+				try {
+					rs.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
 			}
 			if (stmt != null) {
-				stmt.close();
+				try {
+					stmt.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
 			}
 		}
+
 		return result;
 	}
 
-	public static String backupTable(String tableName)  throws SQLException {
+	public static String backupTable(String tableName) {
 		Connection conn = MyMySQLConnection.getConnection();
 		
 		Statement stmt = null;
@@ -93,13 +111,17 @@ public class MyMySQLExecutor {
 			System.out.println(e.getMessage());
 		} finally {
 			if (stmt != null) {
-				stmt.close();
+				try {
+					stmt.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 		return result;
 	}
 
-	public static String dropTable(String tableName)  throws SQLException {
+	public static String dropTable(String tableName) {
 		Connection conn = MyMySQLConnection.getConnection();
 		
 		Statement stmt = null;
@@ -113,7 +135,11 @@ public class MyMySQLExecutor {
 			System.out.println(e.getMessage());
 		} finally {
 			if (stmt != null) {
-				stmt.close();
+				try {
+					stmt.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 		return result;

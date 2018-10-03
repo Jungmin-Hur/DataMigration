@@ -20,50 +20,20 @@ public class PreMigration {
 		setup();
 		
 		dbConnectionTest();
-		loadDataTest();
-		
-		PreMigrationService preMigrationService = new PreMigrationService();
 		
 		//Bridge Table 생성, source db에서 bridge table로 데이터 이동 (SourceSchemaInfo로 생성)
 		//sourceInfoList로 Schema Mapping 정보 Load - 한 item당 한개의 Mapping 정보
 		AnalysisService analysisService = new AnalysisService();
 		List<SourceInfo> sourceInfoList = analysisService.loadSchemaInfoFromFile(SCHEMAINFO_FILE_NAME);
-		
+
+		PreMigrationService preMigrationService = new PreMigrationService();
 		preMigrationService.migrationToBridgeTable(sourceInfoList);
 		
+		///////////////////////
 		//TODO Target Table의 PK정보로 Bridge Table 조회시 중복 데이터 존재하는지 확인
 		//TODO Target Table의 FK정보로 Bridge Table 내 Reference 데이터가 모두 존재하는지 확인
 		//TODO Target Table의 nullable정보로 Bridge Table 데이터 확인
 
-//		System.out.println(MyMySQLConnection.getHost());
-
-//		ResultReportService.writeAnalysisReport("Analysis 시작 ------------------");
-//		
-//		AnalysisService analysis = new AnalysisService();
-//		
-//		boolean isConvertableColumnType = true;
-//		boolean isConvaertableColumnSize = true;
-//		boolean validationResult = true;
-//		
-//		//스키마정보, 데이터 정의 -> model로 데이터 converting
-//		List<SourceInfo> sourceInfoList = analysis.loadSchemaInfoFromFile(SCHEMAINFO_FILE_NAME);
-//		if(sourceInfoList != null) {
-//			//Source, Target Column Type 호환 체크
-//			isConvertableColumnType = analysis.isCompatibilityColumnType(sourceInfoList);
-//
-//			//Source, Target Column 길이 호환 체크
-//			isConvaertableColumnSize = analysis.isCompatibilityColumnSize(sourceInfoList);
-//
-//			//as-is 데이터 정의 (클랜징 데이터 존재하는지 여부)
-//			validationResult = analysis.findCleansingData(sourceInfoList);
-//		}
-//
-//		if(!isConvertableColumnType || !isConvaertableColumnSize || !validationResult) {
-//			ResultReportService.writeAnalysisReport("Analysis 분석결과 문제가 있는 데이터가 존재합니다. Report상에서 문제 부분 확인하여 필요시 조치하세요.");
-//		}
-//			
-//		ResultReportService.writeAnalysisReport("Analysis 종료 !!! --------------");
-//
 		finalizeConnections();
 	}
 	
