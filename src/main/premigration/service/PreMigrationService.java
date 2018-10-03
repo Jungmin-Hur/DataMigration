@@ -12,7 +12,6 @@ import main.analysis.model.TargetInfo;
 import main.common.bridgetable.Oracle2MySqlBridgeTableSchemaMappingInfo;
 import main.db.mysql.MyMySQLExecutor;
 import main.db.oracle.MyOracleExecutor;
-import main.report.ResultReportService;
 
 public class PreMigrationService implements IPreMigrationService {
 
@@ -24,34 +23,85 @@ public class PreMigrationService implements IPreMigrationService {
 
 		if(isExistSourceTable(sourceTableNameList)) {
 
-			//bridge table이 이미 존재하면, 기존 bridge table을 backup하고 삭제
-			backupTable(sourceTableNameList, sourceInfoList);
-
-			//bridge table schema 생성
-			createBridgeTableSchema(sourceTableNameList, sourceInfoList);
-
-			//Source Table (oracle) -> Bridge Table (mysql) 로 데이터 이동
-//			moveSourceToBridgeTable(sourceTableNameList, sourceInfoList);
-
+			boolean availableStartingPreMigration = true;
+			
 			//Analysis에서 입력받은 TargetSchemaInfo가 실제 Target Table에 모두 존재하는지, Column Type이 동일한지 체크
 			if(!checkTargetTableSchema(targetTableNameList, sourceInfoList)) {
+				availableStartingPreMigration = false;
 				System.out.println("SchemaInfo.txt의 Target Table 정보와 실제 Target Table Schema 정보가 일치하지 않습니다.");
 			} else {
 				System.out.println("SchemaInfo.txt의 Target Table 정보와 실제 Target Table Schema 정보 일치 검증 완료");
 			}
 			
-			//Mapping Definitaion check
+			//Mapping Definition check
 			if(!checkTargetMappingDefinition(sourceInfoList)) {
+				availableStartingPreMigration = false;
 				System.out.println("SchemaInfo.txt의 Target Table Mapping Definition이 올바르지 않습니다.");
 			} else {
 				System.out.println("SchemaInfo.txt의 Target Table Mapping Definition 검증 완료");
 			}
 			
-			//TODO Target Table검증 (기존에 존재하는 데이터가 정상적인지 체크)
+			//Mapping Limitation check
+			if(!checkTargetMappingLimitation(sourceInfoList)) {
+				availableStartingPreMigration = false;
+				System.out.println("SchemaInfo.txt의 Target Table Mapping Limitation이 올바르지 않습니다.");
+			} else {
+				System.out.println("SchemaInfo.txt의 Target Table Mapping Limitation 검증 완료");
+			}
 			
+			//TODO Target Table검증 (기존에 존재하는 데이터가 정상적인지 체크) : 이 부분이 필요한지 여부 추가 검토 필요
+			
+			if(availableStartingPreMigration) {
+				//bridge table이 이미 존재하면, 기존 bridge table을 backup하고 삭제
+				backupTable(sourceTableNameList, sourceInfoList);
+
+				//bridge table schema 생성
+				createBridgeTableSchema(sourceTableNameList, sourceInfoList);
+
+				//Source Table (oracle) -> Bridge Table (mysql) 로 데이터 이동
+				moveSourceToBridgeTable(sourceTableNameList, sourceInfoList);
+			}
 		} else {
 			System.out.println("source db에 존재하지 않는 테이블이 존재합니다.");
 		}
+	}
+	
+	
+	private boolean checkTargetMappingLimitation (List<SourceInfo> sourceInfoList) {
+		
+		boolean isExistCleansingData = true;
+		
+		for(SourceInfo sourceInfo :  sourceInfoList) {
+			TargetInfo targetInfo = sourceInfo.getTargetInfo();
+			
+			if(!Constants.NOT_APPLICABLE.equals(targetInfo.getMappingLimitation())) {
+
+				StringBuffer mappingLimitation = new StringBuffer();
+				mappingLimitation.append("SELECT");
+				mappingLimitation.append(" ");
+				mappingLimitation.append(targetInfo.getMappingDefinition());
+				mappingLimitation.append(" ");
+				mappingLimitation.append("FROM");
+				mappingLimitation.append(" ");
+				mappingLimitation.append(sourceInfo.getTableName());
+				mappingLimitation.append(" ");
+				mappingLimitation.append(sourceInfo.getTableName()); // Alias
+				mappingLimitation.append(" ");
+				mappingLimitation.append("WHERE");
+				mappingLimitation.append(" ");
+				mappingLimitation.append(targetInfo.getMappingLimitation());
+
+				boolean result = MyOracleExecutor.queryExecuter(mappingLimitation.toString());
+
+				if(result == false) {
+					System.out.println(mappingLimitation.toString());
+					System.out.println("Target Mapping Definition에 오류가 존재합니다. Source테이블명:" + sourceInfo.getTableName() + ",Source컬럼명:" + sourceInfo.getColumnName() + ",Target테이블명:" + targetInfo.getTableName() + ",Target컬럼명:" + targetInfo.getColumnName());
+					isExistCleansingData = false;
+				}
+			}
+		}
+		
+		return isExistCleansingData;
 	}
 	
 	private boolean checkTargetMappingDefinition (List<SourceInfo> sourceInfoList) {
