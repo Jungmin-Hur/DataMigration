@@ -6,42 +6,88 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import main.analysis.model.Constants;
 import main.analysis.model.SourceInfo;
+import main.analysis.model.TargetInfo;
 import main.common.bridgetable.Oracle2MySqlBridgeTableSchemaMappingInfo;
 import main.db.mysql.MyMySQLExecutor;
 import main.db.oracle.MyOracleExecutor;
+import main.report.ResultReportService;
 
 public class PreMigrationService implements IPreMigrationService {
 
 	@Override
 	public void migrationToBridgeTable(List<SourceInfo> sourceInfoList) {
 		
-		List<String> tableNameList = getSourceTableList(sourceInfoList);
+		List<String> sourceTableNameList = getSourceTableList(sourceInfoList);
+		List<String> targetTableNameList = getTargetTableList(sourceInfoList);
 
-		if(isExistSourceTable(tableNameList)) {
+		if(isExistSourceTable(sourceTableNameList)) {
+
 			//bridge table이 이미 존재하면, 기존 bridge table을 backup하고 삭제
-			backupTable(tableNameList, sourceInfoList);
+			backupTable(sourceTableNameList, sourceInfoList);
 
-			createBridgeTableSchema(tableNameList, sourceInfoList);
+			//bridge table schema 생성
+			createBridgeTableSchema(sourceTableNameList, sourceInfoList);
 
 			//Source Table (oracle) -> Bridge Table (mysql) 로 데이터 이동
-			moveSourceToBridgeTable(tableNameList, sourceInfoList);
+//			moveSourceToBridgeTable(sourceTableNameList, sourceInfoList);
 
-//			//TODO Target Table Schema체크
-//			// Analysis에서 입력받은 TargetSchemaInfo가 실제 Target Table에 모두 존재하는지, Column Type이 동일한지 체크
-//			// 사용자 누락으로 입력하지 않은 Target Schema정보가 존재하는지 체크	
+			//Analysis에서 입력받은 TargetSchemaInfo가 실제 Target Table에 모두 존재하는지, Column Type이 동일한지 체크
+			if(!checkTargetTableSchema(targetTableNameList, sourceInfoList)) {
+				System.out.println("SchemaInfo.txt의 Target Table 정보와 실제 Target Table Schema 정보가 일치하지 않습니다.");
+			} else {
+				System.out.println("SchemaInfo.txt의 Target Table 정보와 실제 Target Table Schema 정보 일치 검증 완료");
+			}
+			
+			//Mapping Definitaion check
+			if(!checkTargetMappingDefinition(sourceInfoList)) {
+				System.out.println("SchemaInfo.txt의 Target Table Mapping Definition이 올바르지 않습니다.");
+			} else {
+				System.out.println("SchemaInfo.txt의 Target Table Mapping Definition 검증 완료");
+			}
+			
+			//TODO Target Table검증 (기존에 존재하는 데이터가 정상적인지 체크)
+			
 		} else {
 			System.out.println("source db에 존재하지 않는 테이블이 존재합니다.");
 		}
 	}
 	
-	private void moveSourceToBridgeTable(List<String> tableNameList, List<SourceInfo> sourceInfoList) {
-		//x라인씩...
-		//batch처리에 대해서 oracle쪽, mysql쪽 실험결과
-		//일단 한개 읽어서 한개로..
-		//select from source
-		//insert to target
+	private boolean checkTargetMappingDefinition (List<SourceInfo> sourceInfoList) {
+		
+		boolean isExistCleansingData = true;
+		
+		for(SourceInfo sourceInfo :  sourceInfoList) {
+			TargetInfo targetInfo = sourceInfo.getTargetInfo();
+			
+			if(!Constants.NOT_APPLICABLE.equals(targetInfo.getMappingDefinition())) {
 
+				StringBuffer mappingDefinition = new StringBuffer();
+				mappingDefinition.append("SELECT");
+				mappingDefinition.append(" (");
+				mappingDefinition.append(targetInfo.getMappingDefinition());
+				mappingDefinition.append(") ");
+				mappingDefinition.append("FROM");
+				mappingDefinition.append(" ");
+				mappingDefinition.append(sourceInfo.getTableName());
+				mappingDefinition.append(" ");
+				mappingDefinition.append(sourceInfo.getTableName()); // Alias
+
+				//System.out.println(mappingDefinition.toString());
+				boolean result = MyOracleExecutor.queryExecuter(mappingDefinition.toString());
+				if(result == false) {
+					System.out.println(mappingDefinition.toString());
+					System.out.println("Target Mapping Definition에 오류가 존재합니다. Source테이블명:" + sourceInfo.getTableName() + ",Source컬럼명:" + sourceInfo.getColumnName() + ",Target테이블명:" + targetInfo.getTableName() + ",Target컬럼명:" + targetInfo.getColumnName());
+					isExistCleansingData = false;
+				}
+			}
+		}
+		
+		return isExistCleansingData;
+	}
+	
+	private void moveSourceToBridgeTable(List<String> tableNameList, List<SourceInfo> sourceInfoList) {
 		for(String tableName : tableNameList) {
 			List<String> columnNames = new ArrayList<>();
 			for(SourceInfo sourceInfo : sourceInfoList) {
@@ -56,7 +102,6 @@ public class PreMigrationService implements IPreMigrationService {
 			
 			System.out.println("Bridge Table에 데이터 이동이 완료되었습니다. 테이블명 : " + tableName);
 		}
-
 	}
 	
 	private boolean isExistSourceTable(List<String> tableNameList) {
@@ -84,7 +129,7 @@ public class PreMigrationService implements IPreMigrationService {
 			//테이블이 존재하는지 확인. 기존에 테이블이 존재하고 있으면 result가 0보다 큼
 			result = MyMySQLExecutor.selectTableName(tableName);
 		
-			//테이블 존재하면 기존꺼 백업(B_~)하고 drop(BT~)
+			//테이블 존재하면 기존꺼 백업(BACK_~)하고 drop(BT_)
 			//테이블 존재하지 않으면 skip
 			if(result.equalsIgnoreCase(tableName)) { //bridge table이 존재함
 				MyMySQLExecutor.backupTable(tableName);
@@ -104,6 +149,21 @@ public class PreMigrationService implements IPreMigrationService {
 			tableMap.put(sourceInfo.getTableName(), "1");
 		}
 		
+		List<String> tableNameList = new ArrayList<>();
+		Iterator<String> keys = tableMap.keySet().iterator();
+		while(keys.hasNext()) {
+			tableNameList.add(keys.next());
+		}
+		return tableNameList;
+	}
+
+	private List<String> getTargetTableList(List<SourceInfo> sourceInfoList){
+		Map<String, String> tableMap = new HashMap<>();
+		for(SourceInfo sourceInfo : sourceInfoList) {
+			if(!sourceInfo.getTargetInfo().getTableName().equals("N/A")) {
+				tableMap.put(sourceInfo.getTargetInfo().getTableName(), "1");
+			}
+		}
 		List<String> tableNameList = new ArrayList<>();
 		Iterator<String> keys = tableMap.keySet().iterator();
 		while(keys.hasNext()) {
@@ -133,4 +193,49 @@ public class PreMigrationService implements IPreMigrationService {
 		}
 	}
 
+	private boolean checkTargetTableSchema(List<String> tableNameList, List<SourceInfo> sourceInfoList) {
+		boolean result = true;
+		for(String tableName : tableNameList) {
+			List<String> columnNames = new ArrayList<>();
+			for(SourceInfo sourceInfo : sourceInfoList) {
+				TargetInfo targetInfo = sourceInfo.getTargetInfo();
+				if(!targetInfo.getColumnName().equals("N/A")) {
+					if(tableName.equals(targetInfo.getTableName())) {
+						columnNames.add(targetInfo.getColumnName());
+					}
+				}
+			}
+
+			//target db에 없는 targetInfo가 존재하는지 여부
+			if(!isExistTargetColumn(tableName, sourceInfoList)) {
+				result = false;
+			}
+		}
+		
+		return result;
+	}
+	
+	private boolean isExistTargetColumn(String tableName, List<SourceInfo> sourceInfoList) {
+		int notExistCount = 0;
+		List<String> targetTableColumnNames = MyMySQLExecutor.selectColumnNames(tableName);
+		for(String columnName : targetTableColumnNames) {
+			boolean find = false;
+			for(SourceInfo sourceInfo : sourceInfoList) {
+				TargetInfo targetInfo = sourceInfo.getTargetInfo();
+				if(targetInfo.getTableName().equals(tableName)) {
+					if(targetInfo.getColumnName().equals(columnName)) {
+						find = true;
+					}
+				}
+			}
+			if(find == false) {
+				System.out.println("SchemaInfo.txt의 Target 컬럼에 실제 존재하지 않는 Target 테이블 컬럼이 있습니다. 테이블명 : " + tableName + ", 컬럼명 : " + columnName);
+				notExistCount ++;
+			}
+		}
+		
+		System.out.println("테이블명 : " + tableName + ", SchemaInfo.txt에는 존재하고 실제 존재하지 않는 컬럼 건수 : "  + notExistCount);
+		
+		return notExistCount > 0 ? false : true;
+	}
 }

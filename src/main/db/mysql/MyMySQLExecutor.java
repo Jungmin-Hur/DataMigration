@@ -4,12 +4,14 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 import main.report.ResultReportService;
 
 public class MyMySQLExecutor {
 
-	public static String selectOneQueryExecutor(String query) throws SQLException {
+	public static String selectOneQueryExecutor(String query) {
 		Connection conn = MyMySQLConnection.getConnection();
 		
 		//SELECT만 허용
@@ -25,9 +27,15 @@ public class MyMySQLExecutor {
 			ResultSet rs = stmt.executeQuery(query);
 			rs.next();
 			result = rs.getString(1);
+		} catch (SQLException e) {
+			e.printStackTrace();
 		} finally {
 			if (stmt != null) {
-				stmt.close();
+				try {
+					stmt.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 		return result;
@@ -57,6 +65,44 @@ public class MyMySQLExecutor {
 			}
 		}
 		return result;
+	}
+	
+	public static List<String> selectColumnNames(String tableName){
+		Connection conn = MyMySQLConnection.getConnection();
+		ResultSet rs = null;
+		Statement stmt = null;
+		List<String> result = new ArrayList<>();
+		String query = "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '" + tableName + "'";
+
+		try {
+			stmt = conn.createStatement();
+			rs = stmt.executeQuery(query);
+			while (rs.next()) {
+				result.add(rs.getString(1));
+			}
+		} catch(SQLException e){
+			e.printStackTrace();
+		} catch(Exception e){
+			e.printStackTrace();
+		} 
+		finally {
+			if (rs != null) {
+				try {
+					rs.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+			if (stmt != null) {
+				try {
+					stmt.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+
+		return result;	
 	}
 	
 	public static String selectTableName(String tableName) {
