@@ -1,18 +1,20 @@
 package main.query;
 
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
 
 import main.analysis.model.Constants;
 
 public class ResultQueryService {
 
-	public static void writeResultQuery (String message) {
-		FileWriter output = null;
-		output = ResultQueryFileConnection.getFileWriter();
+	synchronized public static void writeResultQuery (String message) {
+//		FileWriter output = null;
+		FileOutputStream output = null;
+		output = ResultQueryFileConnection.getFileOutputStream();
+//		output = ResultQueryFileConnection.getFileWriter();
 		try {
 			System.out.println(message);
-			output.write(message + "\r\n");
+			output.write((message + "\r\n").getBytes());
 			
 		} catch (IOException e) {
 			e.printStackTrace();

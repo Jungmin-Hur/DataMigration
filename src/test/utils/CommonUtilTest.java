@@ -38,4 +38,11 @@ class CommonUtilTest {
 		String expectedString = s1 + "," + s2 + "," + s3;
 		assertEquals(expectedString, CommonUtil.prettyStringListPrint(list));
 	}
+	
+	@Test
+	void test() {
+		String str = "COLUMN1, COMLUMN2";
+		System.out.println(str.split(",")[0]);
+		System.out.println(str.split(",")[1]);
+	}
 }

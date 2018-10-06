@@ -63,31 +63,36 @@ public class MigrationService implements IMigrationService {
 			
 			String tableName = migrationPlan.getTableName();
 			
+//			if(!tableName.equals("REAL_ESTATE_TRANSACTION")) continue;
+			
+			//#step1
 			//작업용 데이터만 추출
 			List<SourceInfo> wksourceInfoList = migrationBiz.extractSourceInfo(sourceInfoList, tableName);
 			
 			//Selectquery생성
 			String selectQuery = migrationBiz.makeSelectQuery(wksourceInfoList);
 			
-			//Insertquery생성
-			List<String> insertQueryList = migrationBiz.makeInsertQuery(wksourceInfoList, selectQuery);
+			//Insertquery생성 & write file
+			int insertQueryCount = migrationBiz.makeInsertQuery(wksourceInfoList, selectQuery);
 
-			//TODO Mapping Definition 작업 데이터만 추출
+			System.out.println(tableName + " : " + insertQueryCount + "row 스크립트가 생성되었습니다.");
 			
-			//TODO SELECT QUERY생성
-			
-			//TODO INSERT (ON DUPLICATE KEY) QUERY 생성
-			
-			//TODO 해당 테이블에서 데이터를 조회하는데, Limitation / Definition에 추가하고, 
-			// MigrationPlan 에서 Where절 추가해서 가지고 와야 함
-			
-			//TODO 한줄씩 받아서 파일에 write
-			writeInsertQuery(insertQueryList);
-			
+			//#step2
+			//Mapping Definition 작업 데이터만 추출
+			List<SourceInfo> wkMappingLimitationSourceInfoList = migrationBiz.extractMappingLimitationSourceInfo(sourceInfoList, tableName);
+			if(wkMappingLimitationSourceInfoList != null && wkMappingLimitationSourceInfoList.size() > 0) {
+				//SELECT QUERY생성
+				List<String> selectMappingLimitationQueryList = migrationBiz.makeMappingLimitationSelectQuery(wkMappingLimitationSourceInfoList);
+				
+				//INSERT (ON DUPLICATE KEY) QUERY 생성
+				int index = 0;
+				for(String query : selectMappingLimitationQueryList) {
+					List<String> insertMappingLimitationQueryList = migrationBiz.makeMappingLimitationInsertQuery(wkMappingLimitationSourceInfoList, query);
+					index++;
+				}
+				
+				System.out.println(tableName + " : " + index + "row 스크립트가 Definition에 의해 생성되었습니다.");
+			}
 		}
-	}
-	
-	private void writeInsertQuery(List<String> query) {
-		//TODO File write
 	}
 }

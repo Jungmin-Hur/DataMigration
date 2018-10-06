@@ -68,10 +68,24 @@ public class MigrationBiz {
 		return extractResult;
 	}
 	
+	public List<SourceInfo> extractMappingLimitationSourceInfo(List<SourceInfo> sourceInfoList, String tableName){
+		List<SourceInfo> extractResult = new ArrayList<>();
+		for(SourceInfo sourceInfo : sourceInfoList) {
+			if(sourceInfo.getTableName().equals(tableName)) {
+				if(!sourceInfo.getTargetInfo().getTableName().equals("N/A") &&
+						!sourceInfo.getTargetInfo().getMappingLimitation().equals("N/A")	) {
+					extractResult.add(sourceInfo);
+				}
+			}
+		}
+		return extractResult;
+	}
+	
 	public String makeSelectQuery(List<SourceInfo> sourceInfoList) {
 		if(sourceInfoList == null || sourceInfoList.isEmpty()) {
 			return null;
 		}
+
 		StringBuffer query = new StringBuffer();
 		query.append("SELECT");
 		query.append(SPACE);
@@ -99,12 +113,43 @@ public class MigrationBiz {
 		return query.toString();
 	}
 
-	public List<String> makeInsertQuery(List<SourceInfo> sourceInfoList, String selectQuery) {
-		if(selectQuery == null) {
+	public List<String> makeMappingLimitationSelectQuery(List<SourceInfo> sourceInfoList) {
+		if(sourceInfoList == null || sourceInfoList.isEmpty()) {
 			return null;
 		}
-		if(sourceInfoList == null) {
+
+		int index = 0;
+		List<String> result = new ArrayList<>(); 
+		for(SourceInfo sourceInfo : sourceInfoList) {
+			StringBuffer query = new StringBuffer();
+			query.append("SELECT");
+			query.append(SPACE);
+			TargetInfo targetInfo = sourceInfo.getTargetInfo();
+			query.append(targetInfo.getMappingDefinition().split(",")[0]);
+			query.append(COMMA);	
+			query.append(targetInfo.getMappingDefinition().split(",")[1]);
+			query.append(SPACE);
+			query.append("FROM");
+			query.append(SPACE);
+			query.append("BT_" + sourceInfoList.get(0).getTableName()); //bridge table에서 찾아야함
+			
+			result.add(query.toString());
+			index++;
+		}
+		
+		if(index == 0) {
 			return null;
+		}
+
+		return result;
+	}
+	
+	public int makeInsertQuery(List<SourceInfo> sourceInfoList, String selectQuery) {
+		if(selectQuery == null) {
+			return 0;
+		}
+		if(sourceInfoList == null) {
+			return 0;
 		}
 
 		//DB에서 데이터 조회
@@ -134,6 +179,51 @@ public class MigrationBiz {
 			queryList.add(query.toString());
 		}
 		
+		return queryList.size();
+	}
+	
+	public List<String> makeMappingLimitationInsertQuery(List<SourceInfo> sourceInfoList, String selectQuery) {
+		if(selectQuery == null) {
+			return null;
+		}
+		if(sourceInfoList == null) {
+			return null;
+		}
+
+		//DB에서 데이터 조회
+		List<Map<String, String>> insertQueryDataList = MyMySQLExecutor.makeInsertQuery(selectQuery, 2); //두개씩만
+		int totalQueryCount = insertQueryDataList.size();
+		List<String> queryList = new ArrayList<>();
+
+		//컬럼 STRING 추출
+		//조회한 데이터로 QUERY만들기
+		for(int i=0; i < totalQueryCount; i++) {
+			StringBuffer query = new StringBuffer();
+			query.append("INSERT INTO");
+			query.append(SPACE);
+			query.append(sourceInfoList.get(0).getTargetInfo().getTableName());
+			query.append(SPACE);
+			query.append("(");
+			query.append(sourceInfoList.get(0).getTargetInfo().getMappingLimitation());
+			query.append(")");
+			query.append(SPACE);
+			query.append("VALUES");
+			query.append(SPACE);
+			query.append("(");
+			query.append(extractDataMapToString(insertQueryDataList.get(i)));
+			query.append(")");
+			query.append(SPACE);
+			query.append("ON DUPLICATE KEY UPDATE");
+			query.append(SPACE);
+			query.append(sourceInfoList.get(0).getTargetInfo().getMappingLimitation().split(",")[0]); //키가 중복되었을 때 업데이트할 컬럼
+			query.append("="); //키가 중복되었을 때 업데이트할 컬럼
+			query.append("VALUES("+ sourceInfoList.get(0).getTargetInfo().getMappingLimitation().split(",")[0] + ")"); //키가 중복되었을 때 업데이트할 컬럼
+			query.append(SPACE);
+			
+			ResultQueryService.writeResultQuery(query.toString()); 
+			queryList.add(query.toString());
+		}
+		
 		return queryList;
 	}
 
@@ -152,7 +242,6 @@ public class MigrationBiz {
 
 	private String extractDataMapToString(Map<String, String> dataMap) {
 		StringBuffer columnsString = new StringBuffer();
-		int index = 0;
 		int size = dataMap.size();
 		
 		for(int i=0; i < size; i++) {
@@ -162,6 +251,9 @@ public class MigrationBiz {
 			
 			String data = dataMap.get(String.valueOf(i+1));
 			columnsString.append("'");
+			if(data == null || data.equals("null")) {
+				data = "";
+			}
 			columnsString.append(data);
 			columnsString.append("'");
 		}

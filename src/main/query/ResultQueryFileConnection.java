@@ -1,6 +1,6 @@
 package main.query;
 
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
@@ -10,12 +10,11 @@ public class ResultQueryFileConnection {
 	private static String path;
 	private static String filename;
 	private static String prefix;
-	private static FileWriter fileWriter;
+//	private static FileWriter fileWriter;
+	private static FileOutputStream output;
 	
 	String propertiesPath = "/main/resources/application.properties";
 	
-	//TODO Convert singleton pattern
-
 //	private static ReportAnalysisConnection reportAnalysisConnection = new ReportAnalysisConnection();
 
 	public ResultQueryFileConnection() {
@@ -38,16 +37,24 @@ public class ResultQueryFileConnection {
 		}
 		
 		try {
-			fileWriter = new FileWriter(path+prefix+filename, true); //set append option
+//			fileWriter = new FileWriter(path+prefix+filename, true); //set append option
+			output = new FileOutputStream(path+prefix+filename, true);
 		} catch (IOException e) {
 			ResultQueryService.writeResultQuery("Analysis 결과 파일 생성에 실패하였습니다.");
 			e.printStackTrace();
 		}
 	}
 	
-	public static FileWriter getFileWriter() {
-		return fileWriter;
+//	synchronized public static FileWriter getFileWriter() {
+////		return fileWriter;
+//		return output;
+//	}
+
+	synchronized public static FileOutputStream getFileOutputStream() {
+//		return fileWriter;
+		return output;
 	}
+	
 	
 	public String getPath() {
 		return path;
@@ -61,15 +68,15 @@ public class ResultQueryFileConnection {
 		return prefix;
 	}
 	
-	public static void closeFileStream() {
-		try {
-			if(fileWriter != null) {
-				fileWriter.close();
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
+//	public static void closeFileStream() {
+//		try {
+//			if(fileWriter != null) {
+//				fileWriter.close();
+//			}
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
+//	}
 //	
 //	@Override
 //	protected void finalize() throws Throwable {

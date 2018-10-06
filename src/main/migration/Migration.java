@@ -35,10 +35,12 @@ public class Migration {
 		AnalysisService analysisService = new AnalysisService();
 		List<SourceInfo> sourceInfoList = analysisService.loadSchemaInfoFromFile(SCHEMAINFO_FILE_NAME);
 		
-		//TODO 파일만들기
+		//Generate query script file
 		migrationService.makeInsertQueryFile(migrationPlanList, sourceInfoList);
 		
 		finalizeConnections();
+		
+		System.out.println("Migration Script File is generated!!");
 	}
 	
 	private static void setup() {
