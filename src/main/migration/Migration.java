@@ -10,7 +10,7 @@ import main.db.mysql.MyMySQLConnection;
 import main.db.oracle.MyOracleConnection;
 import main.migration.model.MigrationPlan;
 import main.migration.service.MigrationService;
-import main.premigration.service.PreMigrationService;
+import main.query.ResultQueryFileConnection;
 import main.report.ReportAnalysisFileConnection;
 
 public class Migration {
@@ -36,7 +36,7 @@ public class Migration {
 		List<SourceInfo> sourceInfoList = analysisService.loadSchemaInfoFromFile(SCHEMAINFO_FILE_NAME);
 		
 		//TODO 파일만들기
-		migrationService.makeInsertQueryFile(sourceInfoList);
+		migrationService.makeInsertQueryFile(migrationPlanList, sourceInfoList);
 		
 		finalizeConnections();
 	}
@@ -47,6 +47,7 @@ public class Migration {
 		MyOracleConnection oracleConnection = new MyOracleConnection(); //Load Oracle Connection
 		MyMySQLConnection mysqlConnection = new MyMySQLConnection(); // Load MySQL Connection
 		ReportAnalysisFileConnection reportAnalysisConnection = new ReportAnalysisFileConnection();
+		ResultQueryFileConnection resultQueryFileConnection = new ResultQueryFileConnection();
 	}
 	
 	private static void finalizeConnections() {

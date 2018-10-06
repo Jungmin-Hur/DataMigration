@@ -15,8 +15,8 @@ public interface IMigrationService {
 	public List<MigrationPlan> loadMigrationPlanFromFile(String filename);
 	
 	/**
-	 * Insert File 생성 (flyway용)
+	 * Insert File 생성
 	 * @param sourceInfoList
 	 */
-	public void makeInsertQueryFile(List<SourceInfo> sourceInfoList);
+	public void makeInsertQueryFile(List<MigrationPlan> migrationPlanList, List<SourceInfo> sourceInfoList);
 }

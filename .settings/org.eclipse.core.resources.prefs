@@ -1,6 +1,8 @@
 eclipse.preferences.version=1
 encoding//src/README.md=UTF-8
 encoding//src/main/analysis/service/AnalysisService.java=UTF-8
+encoding//src/main/migration/biz/MigrationBiz.java=UTF-8
+encoding//src/main/migration/service/MigrationService.java=UTF-8
 encoding//src/main/premigration/service/PreMigrationService.java=UTF-8
 encoding//src/main/resources/application.properties=UTF-8
 encoding//src/main/resources/db.properties=UTF-8

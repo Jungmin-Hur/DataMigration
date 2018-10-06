@@ -5,7 +5,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import main.report.ResultReportService;
 
@@ -188,6 +190,49 @@ public class MyMySQLExecutor {
 				}
 			}
 		}
+		return result;
+	}
+	
+	public static List<Map<String, String>> makeInsertQuery(String query, int columnCount){
+		Connection conn = MyMySQLConnection.getConnection();
+		
+		Statement stmt = null;
+		ResultSet rs = null;
+		
+		List<Map<String, String>> result = new ArrayList<>();
+		
+		try {
+			stmt = conn.createStatement();
+			rs = stmt.executeQuery(query);
+			while (rs.next()) {
+				Map<String, String> map = new HashMap<>();
+				for(int i=0 ; i < columnCount ; i ++) {
+					map.put(String.valueOf(i+1), rs.getString(i+1));
+				}
+				result.add(map);
+			}
+		} catch(SQLException e){
+			e.printStackTrace();
+		} catch(Exception e){
+			e.printStackTrace();
+		} 
+		finally {
+			if (rs != null) {
+				try {
+					rs.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+			if (stmt != null) {
+				try {
+					stmt.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+
 		return result;
 	}
 }

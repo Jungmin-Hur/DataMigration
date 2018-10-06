@@ -125,7 +125,7 @@ public class MyOracleExecutor {
 		
 		Statement stmt = null;
 		String result = "";
-		String createTableQuery = "CREATE TABLE " + "B_" + tableName + " AS SELECT * FROM " + tableName;
+		String createTableQuery = "CREATE TABLE " + "B_" + tableName + " AS SELECT * FROM " + tableName; //oracle의 테이블명은 30byte를 넘을 수 없음.
 
 		try {
 			stmt = conn.createStatement();

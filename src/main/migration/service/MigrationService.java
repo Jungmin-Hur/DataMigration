@@ -11,8 +11,8 @@ import java.util.List;
 import main.analysis.model.Constants;
 import main.analysis.model.SourceInfo;
 import main.common.utils.CommonUtil;
+import main.migration.biz.MigrationBiz;
 import main.migration.model.MigrationPlan;
-import main.report.ResultReportService;
 
 public class MigrationService implements IMigrationService {
 
@@ -55,12 +55,39 @@ public class MigrationService implements IMigrationService {
 		}
 		return migrationPlan;
 	}
+	
+	public void makeInsertQueryFile(List<MigrationPlan> migrationPlanList, List<SourceInfo> sourceInfoList) {
+		MigrationBiz migrationBiz = new MigrationBiz();
+		
+		for(MigrationPlan migrationPlan : migrationPlanList) {
+			
+			String tableName = migrationPlan.getTableName();
+			
+			//작업용 데이터만 추출
+			List<SourceInfo> wksourceInfoList = migrationBiz.extractSourceInfo(sourceInfoList, tableName);
+			
+			//Selectquery생성
+			String selectQuery = migrationBiz.makeSelectQuery(wksourceInfoList);
+			
+			//Insertquery생성
+			List<String> insertQueryList = migrationBiz.makeInsertQuery(wksourceInfoList, selectQuery);
 
-	public void makeInsertQueryFile(List<SourceInfo> sourceInfoList) {
-		//TODO Insert 대상 select query 만들기
-		
-		//TODO Insert Query 만들기
-		
-		//TODO Write File
+			//TODO Mapping Definition 작업 데이터만 추출
+			
+			//TODO SELECT QUERY생성
+			
+			//TODO INSERT (ON DUPLICATE KEY) QUERY 생성
+			
+			//TODO 해당 테이블에서 데이터를 조회하는데, Limitation / Definition에 추가하고, 
+			// MigrationPlan 에서 Where절 추가해서 가지고 와야 함
+			
+			//TODO 한줄씩 받아서 파일에 write
+			writeInsertQuery(insertQueryList);
+			
+		}
+	}
+	
+	private void writeInsertQuery(List<String> query) {
+		//TODO File write
 	}
 }
