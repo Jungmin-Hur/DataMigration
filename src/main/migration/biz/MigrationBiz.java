@@ -15,6 +15,7 @@ public class MigrationBiz {
 	
 	private static String SPACE = " ";
 	private static String COMMA = ",";
+	private static String SEMICOLON = ";";
 
 	/**
 	 * sorceInfoList에서 SourceTable명 뽑기
@@ -113,6 +114,7 @@ public class MigrationBiz {
 			query.append(SPACE);
 			query.append(samplingCondition);
 		}
+		query.append(SEMICOLON);
 		
 		if(index == 0) {
 			return null;
@@ -148,6 +150,7 @@ public class MigrationBiz {
 				query.append(SPACE);
 				query.append(samplingCondition);
 			}
+			query.append(SEMICOLON);
 			
 			result.add(query.toString());
 			index++;
@@ -177,7 +180,7 @@ public class MigrationBiz {
 		//조회한 데이터로 QUERY만들기
 		for(int i=0; i < totalQueryCount; i++) {
 			StringBuffer query = new StringBuffer();
-			query.append("INSERT IGNORE INTO");
+			query.append("REPLACE INTO");
 			query.append(SPACE);
 			query.append(sourceInfoList.get(0).getTargetInfo().getTableName());
 			query.append(SPACE);
@@ -190,6 +193,7 @@ public class MigrationBiz {
 			query.append("(");
 			query.append(extractDataMapToString(insertQueryDataList.get(i)));
 			query.append(")");
+			query.append(SEMICOLON);
 			
 			ResultQueryService.writeResultQuery(query.toString()); 
 			queryList.add(query.toString());
@@ -220,6 +224,7 @@ public class MigrationBiz {
 			query.append(SPACE);
 			query.append(samplingCondition);
 		}
+		query.append(SEMICOLON);
 
 		if(MyMySQLExecutor.queryExecuter(query.toString())) {
 			System.out.println("BT_" + sourceInfoList.get(0).getTableName() + " : 작업 대상 데이터의 MigrationYN 필드가 Y로 업데이트 되었습니다.");
@@ -246,7 +251,7 @@ public class MigrationBiz {
 		//조회한 데이터로 QUERY만들기
 		for(int i=0; i < totalQueryCount; i++) {
 			StringBuffer query = new StringBuffer();
-			query.append("INSERT IGNORE INTO");
+			query.append("INSERT INTO");
 			query.append(SPACE);
 			query.append(sourceInfoList.get(0).getTargetInfo().getTableName());
 			query.append(SPACE);
@@ -266,6 +271,7 @@ public class MigrationBiz {
 			query.append("="); //키가 중복되었을 때 업데이트할 컬럼
 			query.append("VALUES("+ sourceInfoList.get(0).getTargetInfo().getMappingLimitation().split(",")[0] + ")"); //키가 중복되었을 때 업데이트할 컬럼
 			query.append(SPACE);
+			query.append(SEMICOLON);
 			
 			ResultQueryService.writeResultQuery(query.toString()); 
 			queryList.add(query.toString());

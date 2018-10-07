@@ -1,5 +1,6 @@
 package main.query;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -26,17 +27,22 @@ public class ResultQueryFileConnection {
 			path = properties.getProperty("result.query.path");
 			prefix = properties.getProperty("result.filename.prefix");
 			filename = properties.getProperty("result.query.filename");
-			
+
 			//path는 empty체크하지 않음
 			if(prefix.isEmpty() || filename.isEmpty()) {
 				ResultQueryService.writeResultQuery("application.properties에 report.filename.prefix, report.analysis.filename가 비어있어서 결과 파일 생성에 실패했습니다.");
 				return;
 			}
+			
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		
 		try {
+			File directory = new File(path);
+			File[] files = directory.listFiles();
+			filename = String.valueOf(files.length+1) + "__" + filename;
+			
 //			fileWriter = new FileWriter(path+prefix+filename, true); //set append option
 			output = new FileOutputStream(path+prefix+filename, true);
 		} catch (IOException e) {
