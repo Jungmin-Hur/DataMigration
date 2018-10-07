@@ -81,7 +81,7 @@ public class MigrationBiz {
 		return extractResult;
 	}
 	
-	public String makeSelectQuery(List<SourceInfo> sourceInfoList) {
+	public String makeSelectQuery(List<SourceInfo> sourceInfoList, String samplingCondition) {
 		if(sourceInfoList == null || sourceInfoList.isEmpty()) {
 			return null;
 		}
@@ -105,6 +105,14 @@ public class MigrationBiz {
 		query.append("FROM");
 		query.append(SPACE);
 		query.append("BT_" + sourceInfoList.get(0).getTableName()); //bridge table에서 찾아야함
+		query.append(SPACE);
+		query.append("WHERE MIGRATE_YN='N'");
+		if(samplingCondition != null && !samplingCondition.isEmpty()) {
+			query.append(SPACE);
+			query.append("AND");
+			query.append(SPACE);
+			query.append(samplingCondition);
+		}
 		
 		if(index == 0) {
 			return null;
@@ -113,7 +121,7 @@ public class MigrationBiz {
 		return query.toString();
 	}
 
-	public List<String> makeMappingLimitationSelectQuery(List<SourceInfo> sourceInfoList) {
+	public List<String> makeMappingLimitationSelectQuery(List<SourceInfo> sourceInfoList, String samplingCondition) {
 		if(sourceInfoList == null || sourceInfoList.isEmpty()) {
 			return null;
 		}
@@ -132,6 +140,14 @@ public class MigrationBiz {
 			query.append("FROM");
 			query.append(SPACE);
 			query.append("BT_" + sourceInfoList.get(0).getTableName()); //bridge table에서 찾아야함
+			query.append(SPACE);
+			query.append("WHERE MIGRATE_YN='N'");
+			if(samplingCondition != null && !samplingCondition.isEmpty()) {
+				query.append(SPACE);
+				query.append("AND");
+				query.append(SPACE);
+				query.append(samplingCondition);
+			}
 			
 			result.add(query.toString());
 			index++;
@@ -161,7 +177,7 @@ public class MigrationBiz {
 		//조회한 데이터로 QUERY만들기
 		for(int i=0; i < totalQueryCount; i++) {
 			StringBuffer query = new StringBuffer();
-			query.append("INSERT INTO");
+			query.append("INSERT IGNORE INTO");
 			query.append(SPACE);
 			query.append(sourceInfoList.get(0).getTargetInfo().getTableName());
 			query.append(SPACE);
@@ -177,9 +193,40 @@ public class MigrationBiz {
 			
 			ResultQueryService.writeResultQuery(query.toString()); 
 			queryList.add(query.toString());
+			
+			if((i+1)%100 == 0) {
+				System.out.println(sourceInfoList.get(0).getTargetInfo().getTableName() + " : " + (i+1) + "번째 쿼리 생성중..");
+			}
 		}
+		System.out.println(sourceInfoList.get(0).getTargetInfo().getTableName() + " : " + queryList.size() + "개 쿼리가 생성되었습니다.");
 		
 		return queryList.size();
+	}
+	
+	public boolean updateMigrateYnToN(List<SourceInfo> sourceInfoList, String samplingCondition) {
+		if(sourceInfoList == null || sourceInfoList.isEmpty()) {
+			return false;
+		}
+
+		StringBuffer query = new StringBuffer();
+		query.append("UPDATE");
+		query.append(SPACE);
+		query.append("BT_" + sourceInfoList.get(0).getTableName());
+		query.append(SPACE);
+		query.append("SET MIGRATE_YN='Y'");
+		if(samplingCondition != null && !samplingCondition.isEmpty()) {
+			query.append(SPACE);
+			query.append("WHERE");
+			query.append(SPACE);
+			query.append(samplingCondition);
+		}
+
+		if(MyMySQLExecutor.queryExecuter(query.toString())) {
+			System.out.println("BT_" + sourceInfoList.get(0).getTableName() + " : 작업 대상 데이터의 MigrationYN 필드가 Y로 업데이트 되었습니다.");
+			return true;
+		}
+		
+		return false;
 	}
 	
 	public List<String> makeMappingLimitationInsertQuery(List<SourceInfo> sourceInfoList, String selectQuery) {
@@ -199,7 +246,7 @@ public class MigrationBiz {
 		//조회한 데이터로 QUERY만들기
 		for(int i=0; i < totalQueryCount; i++) {
 			StringBuffer query = new StringBuffer();
-			query.append("INSERT INTO");
+			query.append("INSERT IGNORE INTO");
 			query.append(SPACE);
 			query.append(sourceInfoList.get(0).getTargetInfo().getTableName());
 			query.append(SPACE);
@@ -222,7 +269,13 @@ public class MigrationBiz {
 			
 			ResultQueryService.writeResultQuery(query.toString()); 
 			queryList.add(query.toString());
+
+			if((i+1)%100 == 0) {
+				System.out.println(sourceInfoList.get(0).getTargetInfo().getTableName() + " : " + (i+1) + "번째 Mapping Limitation 쿼리 생성중..");
+			}
 		}
+		
+		System.out.println(sourceInfoList.get(0).getTargetInfo().getTableName() + " : " + queryList.size() + "개 Mapping Limitation 쿼리가 생성되었습니다.");
 		
 		return queryList;
 	}

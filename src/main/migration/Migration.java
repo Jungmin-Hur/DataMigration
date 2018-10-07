@@ -26,9 +26,6 @@ public class Migration {
 		
 		MigrationService migrationService = new MigrationService();
 		List<MigrationPlan> migrationPlanList = migrationService.loadMigrationPlanFromFile(MIGRATION_PLAN_FILE_NAME);
-//		for(MigrationPlan migrationPlan : migrationPlanList) {
-//			System.out.println(migrationPlan.getTableName());
-//		}
 		
 		//Bridge Table 생성, source db에서 bridge table로 데이터 이동 (SourceSchemaInfo로 생성)
 		//sourceInfoList로 Schema Mapping 정보 Load - 한 item당 한개의 Mapping 정보

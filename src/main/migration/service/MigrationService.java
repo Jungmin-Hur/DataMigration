@@ -62,6 +62,10 @@ public class MigrationService implements IMigrationService {
 		for(MigrationPlan migrationPlan : migrationPlanList) {
 			
 			String tableName = migrationPlan.getTableName();
+			String samplingCondition = migrationPlan.getSamplingCondition();
+			if(samplingCondition.equals("N/A")) {
+				samplingCondition = "";
+			}
 			
 //			if(!tableName.equals("REAL_ESTATE_TRANSACTION")) continue;
 			
@@ -70,29 +74,28 @@ public class MigrationService implements IMigrationService {
 			List<SourceInfo> wksourceInfoList = migrationBiz.extractSourceInfo(sourceInfoList, tableName);
 			
 			//Selectquery생성
-			String selectQuery = migrationBiz.makeSelectQuery(wksourceInfoList);
+			String selectQuery = migrationBiz.makeSelectQuery(wksourceInfoList, samplingCondition);
+//			System.out.println(selectQuery);
 			
 			//Insertquery생성 & write file
 			int insertQueryCount = migrationBiz.makeInsertQuery(wksourceInfoList, selectQuery);
 
-			System.out.println(tableName + " : " + insertQueryCount + "row 스크립트가 생성되었습니다.");
-			
 			//#step2
 			//Mapping Definition 작업 데이터만 추출
 			List<SourceInfo> wkMappingLimitationSourceInfoList = migrationBiz.extractMappingLimitationSourceInfo(sourceInfoList, tableName);
 			if(wkMappingLimitationSourceInfoList != null && wkMappingLimitationSourceInfoList.size() > 0) {
 				//SELECT QUERY생성
-				List<String> selectMappingLimitationQueryList = migrationBiz.makeMappingLimitationSelectQuery(wkMappingLimitationSourceInfoList);
+				List<String> selectMappingLimitationQueryList = migrationBiz.makeMappingLimitationSelectQuery(wkMappingLimitationSourceInfoList, samplingCondition);
 				
 				//INSERT (ON DUPLICATE KEY) QUERY 생성
-				int index = 0;
 				for(String query : selectMappingLimitationQueryList) {
 					List<String> insertMappingLimitationQueryList = migrationBiz.makeMappingLimitationInsertQuery(wkMappingLimitationSourceInfoList, query);
-					index++;
 				}
-				
-				System.out.println(tableName + " : " + index + "row 스크립트가 Definition에 의해 생성되었습니다.");
 			}
+			
+			//MIGRATEYN = 'Y'로 업데이트하기
+			migrationBiz.updateMigrateYnToN(wksourceInfoList, samplingCondition);
+			migrationBiz.updateMigrateYnToN(wkMappingLimitationSourceInfoList, samplingCondition);
 		}
 	}
 }

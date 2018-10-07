@@ -13,7 +13,7 @@ public class ResultQueryService {
 		output = ResultQueryFileConnection.getFileOutputStream();
 //		output = ResultQueryFileConnection.getFileWriter();
 		try {
-			System.out.println(message);
+//			System.out.println(message);
 			output.write((message + "\r\n").getBytes());
 			
 		} catch (IOException e) {
