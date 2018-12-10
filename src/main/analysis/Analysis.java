@@ -90,6 +90,5 @@ public class Analysis {
 //		resultReportService4.writeReport(MigrationProgressType.PREMIGRATION, "하하하");
 //		resultReportService1.writeReport(MigrationProgressType.ANALYSIS, "5");
 //		resultReportService2.writeReport(MigrationProgressType.PREMIGRATION, "호호호");
-
 	}
 }
