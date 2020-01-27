@@ -1,0 +1,8 @@
+# Migration순서로 세팅			
+# 테이블명 sampling가능여부 sampling처리여부 조건절			
+# Source Table 기준으로 작성해야 함	
+# Source Table이 아니라 Target Table 기준으로 작성해야함!!!		
+#테이블명	#Sampling가능여부	#Sampling처리여부	#Sampling조건절
+LOT_INFO	N	N	N/A
+LOT_INFO_DETAIL	N	N	N/A
+REAL_ESTATE_TRANSACTION	Y	Y	LOCATION IN ('서울특별시 강남구 도곡동','서울특별시 강남구 삼성동')
